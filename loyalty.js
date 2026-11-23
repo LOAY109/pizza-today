@@ -38,14 +38,8 @@
 
   function calculateOrderPoints(totalSar) {
     const amt = Math.max(0, Number(totalSar) || 0);
-    if (amt <= 0) return { base: 0, bonus: 0, total: 0, tierNote: '' };
-    const base = Math.floor(amt * 2);
-    let bonus = 0;
-    let tierNote = '';
-    if (amt >= 150) { bonus = 100; tierNote = 'مكافأة الطلب الكبير (+100 نقطة)'; }
-    else if (amt >= 100) { bonus = 50; tierNote = 'مكافأة الطلب المميز (+50 نقطة)'; }
-    else if (amt >= 50) { bonus = 20; tierNote = 'مكافأة إضافية (+20 نقطة)'; }
-    return { base, bonus, total: base + bonus, tierNote };
+    const pts = Math.floor(amt);
+    return { base: pts, bonus: 0, total: pts, tierNote: '' };
   }
 
   function getVipTier(lifetimeEarned) {
