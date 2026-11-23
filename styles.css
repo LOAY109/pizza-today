@@ -1,121 +1,135 @@
 :root {
---bg-canvas: #0A0A0A;
---bg-surface: #151515;
---accent-chalk: #FAF9F6;
---accent-parchment: #D8C3A5;
-}
-body {
-background-color: var(--bg-canvas);
-color: #FAF9F6;
-font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
-overflow-x: hidden;
-background-image:
-repeating-linear-gradient(
-0deg,
-rgba(255, 255, 255, 0.014) 0px,
-rgba(255, 255, 255, 0.014) 1px,
-transparent 1px,
-transparent 44px
-);
-}
-.wood-band {
-background-color: #111111;
-background-image:
-repeating-linear-gradient(
-0deg,
-rgba(255, 255, 255, 0.022) 0px,
-rgba(255, 255, 255, 0.022) 1px,
-transparent 1px,
-transparent 36px
-),
-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.25) 100%);
-}
-.glass-nav {
-background: rgba(10, 10, 10, 0.92);
-backdrop-filter: blur(16px);
--webkit-backdrop-filter: blur(16px);
-}
-.hero-gradient {
-background: linear-gradient(180deg, rgba(10, 10, 10, 0.62) 0%, rgba(10, 10, 10, 0.85) 58%, #0A0A0A 100%);
-}
-.card-elevated {
-background: linear-gradient(180deg, rgba(29, 29, 29, 0.88) 0%, rgba(18, 18, 18, 0.98) 100%);
-border: 1px solid rgba(250, 249, 246, 0.1);
-transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 220ms ease, box-shadow 280ms ease;
-}
-.card-elevated:hover {
-transform: translateY(-4px);
-border-color: rgba(250, 249, 246, 0.34);
-box-shadow: 0 20px 44px -18px rgba(0, 0, 0, 0.85);
-}
-.reveal {
-opacity: 0;
-transform: translateY(20px);
-transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal.visible {
-opacity: 1;
-transform: translateY(0);
-}
-#splashScreen {
-transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-#splashScreen.splash-done {
-opacity: 0;
-transform: scale(1.03);
-pointer-events: none;
-}
-.logo-liquid-stage {
-position: relative;
-width: 260px;
-height: 118px;
-}
-.logo-liquid-ghost {
-position: absolute;
-inset: 0;
-width: 100%;
-height: 100%;
-object-fit: contain;
-opacity: 0.16;
-filter: grayscale(100%);
-}
-.logo-liquid-fill-mask {
-position: absolute;
-inset: 0;
-overflow: hidden;
-clip-path: inset(100% 0 0 0);
-transition: clip-path 120ms linear;
-}
-.logo-liquid-fill-img {
-width: 100%;
-height: 100%;
-object-fit: contain;
-filter: drop-shadow(0 0 18px rgba(216, 195, 165, 0.45));
-}
-@keyframes liquidWave {
-0% { transform: translateX(0); }
-100% { transform: translateX(-50%); }
-}
-.liquid-wave-strip {
-position: absolute;
-left: 0;
-width: 200%;
-height: 16px;
-pointer-events: none;
-animation: liquidWave 1.6s linear infinite;
-opacity: 0.65;
-}
-.leaflet-container {
-background: #151515;
-font-family: 'Cairo', sans-serif;
-}
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-@media (prefers-reduced-motion: reduce) {
-.reveal, .card-elevated, #splashScreen, .liquid-wave-strip {
-transition: none !important;
-animation: none !important;
-transform: none !important;
-opacity: 1 !important;
-}
-}
+      --bg-canvas: #0A0A0A;
+      --bg-surface: #151515;
+      --accent-chalk: #FAF9F6;
+      --accent-parchment: #D8C3A5;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: #FAF9F6;
+      font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+      overflow-x: hidden;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.014) 0px,
+          rgba(255, 255, 255, 0.014) 1px,
+          transparent 1px,
+          transparent 44px
+        );
+    }
+
+    .wood-band {
+      background-color: #111111;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.022) 0px,
+          rgba(255, 255, 255, 0.022) 1px,
+          transparent 1px,
+          transparent 36px
+        ),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.25) 100%);
+    }
+
+    .glass-nav {
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(180deg, rgba(10, 10, 10, 0.62) 0%, rgba(10, 10, 10, 0.85) 58%, #0A0A0A 100%);
+    }
+
+    .card-elevated {
+      background: linear-gradient(180deg, rgba(29, 29, 29, 0.88) 0%, rgba(18, 18, 18, 0.98) 100%);
+      border: 1px solid rgba(250, 249, 246, 0.1);
+      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 220ms ease, box-shadow 280ms ease;
+    }
+
+    .card-elevated:hover {
+      transform: translateY(-4px);
+      border-color: rgba(250, 249, 246, 0.34);
+      box-shadow: 0 20px 44px -18px rgba(0, 0, 0, 0.85);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Liquid Fill Splash Screen */
+    #splashScreen {
+      transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #splashScreen.splash-done {
+      opacity: 0;
+      transform: scale(1.03);
+      pointer-events: none;
+    }
+
+    .logo-liquid-stage {
+      position: relative;
+      width: 260px;
+      height: 118px;
+    }
+    .logo-liquid-ghost {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.16;
+      filter: grayscale(100%);
+    }
+    .logo-liquid-fill-mask {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 120ms linear;
+    }
+    .logo-liquid-fill-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(216, 195, 165, 0.45));
+    }
+
+    @keyframes liquidWave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .liquid-wave-strip {
+      position: absolute;
+      left: 0;
+      width: 200%;
+      height: 16px;
+      pointer-events: none;
+      animation: liquidWave 1.6s linear infinite;
+      opacity: 0.65;
+    }
+
+    .leaflet-container {
+      background: #151515;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .card-elevated, #splashScreen, .liquid-wave-strip {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+    }
