@@ -293,6 +293,7 @@ function renderFeatured() {
         const vipLbl = document.getElementById('navVipPoints');
         if (vipLbl) vipLbl.textContent = state.user ? `${PizzaLoyalty.getCustomerSummary(state.user.phone).balance} نقطة` : 'نقاطي';
         if (!document.getElementById('vipModal').classList.contains('hidden')) renderVipModal();
+        if (!document.getElementById('qrFullscreenModal').classList.contains('hidden')) renderQrFullscreen();
       }
 
       // ONLY show top sticky banner for ACTIVE (in-progress) orders! Completed/cancelled orders are hidden from top & live in Cart Order History.
@@ -328,6 +329,30 @@ function renderFeatured() {
 
     // ==================== EVENT LISTENERS ====================
     document.addEventListener('click', (e) => {
+    if (e.target.closest('#openVipBtn')) { openVipModal(); return; }
+    if (e.target.closest('#closeVipBtn') || e.target.id === 'vipModal') { document.getElementById('vipModal').classList.add('hidden'); return; }
+    if (e.target.closest('#openQrFullBtn')) { openQrFullscreen(); return; }
+    if (e.target.closest('#closeQrFullBtn') || e.target.id === 'qrFullscreenModal') { document.getElementById('qrFullscreenModal').classList.add('hidden'); return; }
+    if (e.target.closest('#redeemPtsPlusBtn')) {
+      if (!state.user || !window.PizzaLoyalty) return;
+      const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+      const { total } = getCartStats();
+      const maxPts = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
+      state.redeemPoints = Math.min(maxPts, state.redeemPoints + 100);
+      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons(); return;
+    }
+    if (e.target.closest('#redeemPtsMinusBtn')) {
+      state.redeemPoints = Math.max(0, state.redeemPoints - 100);
+      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons(); return;
+    }
+    if (e.target.closest('#redeemPtsAllBtn')) {
+      if (!state.user || !window.PizzaLoyalty) return;
+      const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+      const { total } = getCartStats();
+      state.redeemPoints = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
+      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons(); return;
+    }
+
       const regBtn = e.target.closest('[data-select-region]');
       if (regBtn) { selectRegion(regBtn.getAttribute('data-select-region')); return; }
 
@@ -399,29 +424,7 @@ function renderFeatured() {
     cartOverlay.addEventListener('click', (e) => { if (e.target === cartOverlay) closeCart(); });
     document.getElementById('cartBranchSelect').addEventListener('change', (e) => { state.activeBranchId = e.target.value; renderRegionsAndBranches(); if (window.lucide) window.lucide.createIcons(); });
     document.getElementById('placeDirectOrderBtn').addEventListener('click', placeDirectOrder);
-    document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = []; document.getElementById('openVipBtn').addEventListener('click', openVipModal);
-    document.getElementById('closeVipBtn').addEventListener('click', () => document.getElementById('vipModal').classList.add('hidden'));
-    document.getElementById('vipModal').addEventListener('click', (e) => { if (e.target.id === 'vipModal') document.getElementById('vipModal').classList.add('hidden'); });
-    document.getElementById('redeemPtsPlusBtn').addEventListener('click', () => {
-      if (!state.user || !window.PizzaLoyalty) return;
-      const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
-      const { total } = getCartStats();
-      const maxPts = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
-      state.redeemPoints = Math.min(maxPts, state.redeemPoints + 100);
-      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons();
-    });
-    document.getElementById('redeemPtsAllBtn').addEventListener('click', () => {
-      if (!state.user || !window.PizzaLoyalty) return;
-      const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
-      const { total } = getCartStats();
-      state.redeemPoints = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
-      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons();
-    });
-    document.getElementById('redeemPtsMinusBtn').addEventListener('click', () => {
-      state.redeemPoints = Math.max(0, state.redeemPoints - 100);
-      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons();
-    });
-    renderAll(); showToast('تم إفراغ السلة'); });
+    document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = []; state.redeemPoints = 0; renderAll(); showToast('تم إفراغ السلة'); });
     document.getElementById('copyOrderBtn').addEventListener('click', () => {
       if (state.cart.length === 0) { showToast('أضف صنف واحد على الأقل أولاً'); return; }
       const branch = BRANCHES.find((b) => b.id === state.activeBranchId) || BRANCHES[0];
