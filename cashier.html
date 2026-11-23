@@ -345,6 +345,23 @@
           <div class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-1.5"><p class="text-[11px] font-bold text-ashMuted">الفرع والاستلام</p><p class="text-sm font-black text-parchment">${o.branchName}</p><p class="text-xs text-ashMuted">${o.regionName} • ${o.isoDate} (${o.createdAt})</p><p class="text-xs font-bold text-chalk pt-1">${o.fulfillment === 'delivery' ? 'توصيل: ' + o.address : 'استلام من الفرع'}</p>${mapBtn}</div>
         </div>
         <div class="rounded-2xl bg-charcoal border border-white/10 p-3.5 flex flex-wrap items-center justify-between gap-2"><span class="text-xs font-extrabold text-chalk">حالة نقاط الطلب:</span>${ptsBadge}</div>
+        ${(o.fulfillment === 'pickup' && o.payment === 'عند الاستلام' && o.status !== 'completed' && o.status !== 'cancelled') ? `
+          <div id="modalPickupQrBox" class="rounded-2xl bg-charcoal border border-amber-400/35 p-4 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h4 class="text-xs sm:text-sm font-black text-amber-300">مسح QR العميل وتفعيل خصم النقاط (دفع عند الاستلام)</h4>
+                <p class="text-[11px] text-ashMuted">صوّر رمز QR العميل واسأله كم يبي يستخدم من نقاطه قبل الدفع.</p>
+              </div>
+              <button id="modalQrCamBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-400 text-charcoal text-xs font-black cursor-pointer shrink-0"><i data-lucide="camera" class="w-4 h-4"></i><span>تصوير QR</span></button>
+            </div>
+            <div id="modalQrCamWrap" class="hidden rounded-xl overflow-hidden border border-parchment/30 bg-black p-1"><div id="modalQrCamReader" class="w-full min-h-[170px]"></div></div>
+            <div class="flex gap-2">
+              <input id="modalQrInput" type="text" dir="ltr" value="${o.memberCode || ''}" placeholder="امسح QR أو رمز العضوية..." class="flex-1 px-3 py-2 rounded-xl bg-slateWood border border-white/15 text-xs text-chalk text-end" />
+              <button id="modalQrVerifyBtn" type="button" class="px-3.5 py-2 rounded-xl bg-parchment text-charcoal text-xs font-black cursor-pointer">تحقق</button>
+            </div>
+            <div id="modalQrRedeemArea" class="hidden rounded-xl bg-emerald-400/10 border border-emerald-400/30 p-3 space-y-2.5"></div>
+          </div>
+        ` : ''}
         ${o.notes ? `<div class="rounded-2xl bg-amber-400/10 border border-amber-400/30 p-3.5 text-xs sm:text-sm font-bold text-amber-200">ملاحظة العميل: ${o.notes}</div>` : ''}
         <div class="rounded-2xl bg-charcoal border border-white/10 overflow-hidden">
           <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between text-xs font-extrabold text-ashMuted"><span>تفاصيل الأصناف (${o.items.reduce((s, i) => s + i.qty, 0)} قطعة)</span><span>الدفع: <strong class="text-parchment">${o.payment}</strong></span></div>
@@ -358,6 +375,83 @@
       if (o.status !== 'completed' && o.status !== 'cancelled') buttons.push(`<button type="button" data-next="cancelled" data-oid="${o.id}" class="px-4 py-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/35 text-rose-300 text-xs font-extrabold cursor-pointer">إلغاء الطلب</button>`);
       if (buttons.length === 0) buttons.push(`<span class="text-xs text-ashMuted font-bold">تم إغلاق هذا الطلب (${st.label}).</span>`);
       actionsEl.innerHTML = buttons.join('');
+      const modalQrBox = document.getElementById('modalPickupQrBox');
+      if (modalQrBox && window.PizzaLoyalty) {
+        let mQrCam = null;
+        const showRedeemControls = (phone) => {
+          const sum = PizzaLoyalty.getCustomerSummary(phone);
+          const area = document.getElementById('modalQrRedeemArea');
+          if (!area) return;
+          area.classList.remove('hidden');
+          const maxPts = Math.floor(Math.min(sum.balance, Math.floor(o.total) * 100) / 100) * 100;
+          if (maxPts < 100) {
+            area.innerHTML = `<p class="text-xs text-parchment font-bold">تم التحقق من العميل — رصيده الحالي ${sum.balance} نقطة (أقل من 100 نقطة للخصم). يمكنك إنهاء الطلب وستُضاف له نقاطه.</p>`;
+            return;
+          }
+          let chosenPts = 0;
+          const drawArea = () => {
+            const discSar = Math.floor(chosenPts / 100);
+            const remain = Math.max(0, o.total - discSar);
+            area.innerHTML = `
+              <div class="flex items-center justify-between text-xs"><span class="font-extrabold text-emerald-300">رصيد العميل: ${sum.balance} نقطة (= ${sum.sarValue} ر.س)</span><span class="font-black text-chalk">المتبقي للدفع: ${remain} ر.س</span></div>
+              <p class="text-[11px] text-ashMuted">اسأل العميل: كم تبي تستخدم من نقاطك؟</p>
+              <div class="flex flex-wrap items-center gap-2">
+                <button id="mPtsMinus" type="button" class="w-8 h-8 rounded-lg bg-charcoal border border-white/15 text-chalk font-black cursor-pointer">-</button>
+                <input id="mPtsVal" type="number" min="0" max="${maxPts}" step="100" value="${chosenPts}" class="w-24 px-2 py-1.5 rounded-lg bg-charcoal border border-white/15 text-center text-xs font-black text-chalk" />
+                <button id="mPtsPlus" type="button" class="w-8 h-8 rounded-lg bg-charcoal border border-white/15 text-chalk font-black cursor-pointer">+</button>
+                <button id="mPtsAll" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-400 text-charcoal text-xs font-black cursor-pointer">استخدام الكل (${Math.floor(maxPts/100)} ر.س)</button>
+              </div>
+              <button id="mApplyDiscBtn" type="button" class="w-full py-2.5 rounded-xl bg-chalk hover:bg-neutral-200 text-charcoal text-xs font-black cursor-pointer">تفعيل الخصم (-${discSar} ر.س) وتحصيل ${remain} ر.س بالصرافة</button>`;
+            document.getElementById('mPtsMinus').onclick = () => { chosenPts = Math.max(0, chosenPts - 100); drawArea(); };
+            document.getElementById('mPtsPlus').onclick = () => { chosenPts = Math.min(maxPts, chosenPts + 100); drawArea(); };
+            document.getElementById('mPtsAll').onclick = () => { chosenPts = maxPts; drawArea(); };
+            document.getElementById('mPtsVal').onchange = (ev) => { chosenPts = Math.max(0, Math.min(maxPts, Math.floor(Number(ev.target.value || 0) / 100) * 100)); drawArea(); };
+            document.getElementById('mApplyDiscBtn').onclick = () => {
+              const disc = Math.floor(chosenPts / 100);
+              if (disc > 0) {
+                const rtx = PizzaLoyalty.recordTransaction({ phone, customerName: o.customerName, delta: -chosenPts, type: 'redeem', orderId: o.id, reason: `خصم QR عند الاستلام #${o.id} (-${disc} ر.س)` });
+                if (!rtx.ok) { alert(rtx.error || 'تعذر الخصم'); return; }
+                o.subtotal = o.subtotal || o.total;
+                o.pointsRedeemed = (o.pointsRedeemed || 0) + chosenPts;
+                o.pointsDiscountSar = (o.pointsDiscountSar || 0) + disc;
+                o.total = Math.max(0, o.total - disc);
+              }
+              if (!o.pointsAwarded && o.total > 0) {
+                const earned = PizzaLoyalty.calculateOrderPoints(o.total).total;
+                if (earned > 0) {
+                  const etx = PizzaLoyalty.recordTransaction({ phone, customerName: o.customerName, delta: earned, type: 'earn_pickup', orderId: o.id, reason: `نقاط استلام طلب #${o.id} (${o.total} ر.س)` });
+                  if (etx.ok) { o.pointsAwarded = true; o.pointsAwardedAmount = earned; }
+                }
+              }
+              o.status = 'completed';
+              saveAndSync();
+              renderDashboard();
+              closeOrderDetailModal();
+              if (window.PizzaPos && PizzaPos.showMadaModal) PizzaPos.showMadaModal(o, 'MD-' + Math.floor(100000 + Math.random() * 900000));
+            };
+          };
+          drawArea();
+        };
+        document.getElementById('modalQrVerifyBtn').onclick = () => {
+          const val = document.getElementById('modalQrInput').value.trim();
+          const ver = PizzaLoyalty.verifyMemberCode(val);
+          const phone = ver ? ver.phone : (/^05\d{8}$/.test(val) ? val : null);
+          if (!phone) { alert('رمز QR غير صالح'); return; }
+          showRedeemControls(phone);
+        };
+        document.getElementById('modalQrCamBtn').onclick = () => {
+          if (!window.Html5Qrcode) return;
+          document.getElementById('modalQrCamWrap').classList.remove('hidden');
+          if (!mQrCam) mQrCam = new Html5Qrcode('modalQrCamReader');
+          mQrCam.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 210, height: 130 } }, (txt) => {
+            mQrCam.stop().catch(() => {});
+            document.getElementById('modalQrCamWrap').classList.add('hidden');
+            document.getElementById('modalQrInput').value = txt.trim();
+            const ver = PizzaLoyalty.verifyMemberCode(txt.trim());
+            if (ver) showRedeemControls(ver.phone);
+          }, () => {}).catch(() => { document.getElementById('modalQrCamWrap').classList.add('hidden'); });
+        };
+      }
     }
     document.getElementById('closeOrderModalBtn').addEventListener('click', closeOrderDetailModal);
     document.getElementById('orderDetailModal').addEventListener('click', (e) => { if (e.target.id === 'orderDetailModal') closeOrderDetailModal(); });
