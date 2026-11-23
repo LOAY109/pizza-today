@@ -624,7 +624,7 @@ function renderVipModal() {
     <div class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-2 text-xs">
       <h5 class="font-black text-chalk">كيف تجمع وتستبدل نقاطك؟</h5>
       <ul class="space-y-1.5 text-ashMuted list-disc ps-4">
-        <li><strong class="text-chalk">2 نقطة لكل 1 ريال</strong> + مكافأة إضافية للطلبات الكبيرة (+20 فوق 50 ر.س، +50 فوق 100 ر.س، +100 فوق 150 ر.س).</li>
+        <li><strong class="text-chalk">1 نقطة لكل 1 ريال</strong> من قيمة طلبك (مثلاً: 100 ريال = 100 نقطة).</li>
         <li><strong class="text-chalk">التوصيل الإلكتروني:</strong> تُضاف نقاطك تلقائياً فور تسليم الطلب من الفرع.</li>
         <li><strong class="text-chalk">الاستلام من الفرع:</strong> يمسح الكاشير باركودك أعلاه وتُضاف نقاطك فوراً.</li>
         <li><strong class="text-chalk">جميع فروع المملكة:</strong> نقاطك موحّدة — تجمعها من أي فرع وتستخدمها في أي فرع بالسعودية.</li><li><strong class="text-chalk">الاستبدال:</strong> كل <strong class="text-parchment">100 نقطة = 1 ريال</strong> خصم مباشر داخل السلة.</li>
