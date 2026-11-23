@@ -11,7 +11,9 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="data.js"></script>
   <script src="loyalty.js"></script>
+  <script src="pos.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -61,6 +63,7 @@
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <button id="tabPosBtn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer transition-colors"><i data-lucide="calculator" class="w-4 h-4"></i><span>نقطة البيع (طلب كاشير)</span></button>
           <button id="tabLiveBtn" type="button" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer transition-colors">الطلبات المباشرة</button>
           <button id="tabScannerBtn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer transition-colors"><i data-lucide="scan-line" class="w-4 h-4"></i><span>مسح الباركود والنقاط</span></button>
           <button id="tabArchiveBtn" type="button" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors">السجل السنوي</button>
@@ -77,6 +80,7 @@
         <div class="card-panel rounded-2xl p-4"><p class="text-xs text-ashMuted font-bold">إجمالي المبيعات</p><p id="kpiSales" class="text-3xl font-black text-parchment mt-1 tabular-nums">0 ر.س</p></div>
       </div>
 
+      <section id="posPanel" class="hidden space-y-5"></section>
       <section id="livePanel" class="space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div id="liveStatusFilters" class="flex flex-wrap gap-2"></div>
@@ -158,6 +162,7 @@
     <footer class="border-t border-white/10 py-5 text-center text-xs text-ashMuted">بيتزا اليوم — لوحة الكاشير الداخلية</footer>
   </div>
 
+  <div id="madaTerminalModal" class="hidden fixed inset-0 z-[60] bg-black/85 backdrop-blur-sm p-4 flex items-center justify-center"><div class="w-full max-w-md bg-slateWood rounded-3xl border border-parchment/35 p-6 shadow-2xl"><div id="madaTerminalBody"></div></div></div>
   <div id="orderDetailModal" class="hidden fixed inset-0 z-50 bg-black/82 backdrop-blur-sm p-3 sm:p-5 flex items-center justify-center">
     <div class="w-full max-w-2xl max-h-[92vh] bg-slateWood rounded-3xl border border-white/15 flex flex-col overflow-hidden shadow-2xl">
       <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3 bg-charcoal/80">
@@ -205,6 +210,8 @@
         if (scannedPhone) renderScannedCustomer(scannedPhone);
       }
     });
+    window.getCashierOrders = () => orders;
+    window.appendCashierOrder = (newOrd) => { orders.unshift(newOrd); saveAndSync(); renderDashboard(); };
     function saveAndSync() { safeWrite(STORAGE_KEYS.orders, orders); if (syncChannel) { try { syncChannel.postMessage({ type: 'ORDERS_UPDATED' }); } catch (e) {} } }
     function showScanFeedback(msg, isError) {
       const el = document.getElementById('scanFeedback');
@@ -265,7 +272,7 @@
         </div>
         <div class="space-y-2.5">
           <h4 class="text-xs font-black text-chalk">طلبات الاستلام من الفرع بانتظار اعتماد النقاط (${pendingPickups.length})</h4>
-          ${pendingPickups.length === 0 ? `<p class="text-xs text-ashMuted rounded-xl bg-charcoal border border-white/10 p-3">لا توجد طلبات استلام إلكترونية معلّقة لهذا العميل.</p>` : pendingPickups.map((o) => { const pts = PizzaLoyalty.calculateOrderPoints(o.total); return `<div class="rounded-xl bg-charcoal border border-white/10 p-3.5 flex flex-wrap items-center justify-between gap-3"><div class="text-xs"><p class="font-black text-chalk">#${o.id} • ${o.total} ر.س</p><p class="text-ashMuted">${o.branchName} • ${o.isoDate}</p><p class="text-amber-300 font-bold mt-0.5">يستحق: +${pts.total} نقطة ${pts.tierNote ? '(' + pts.tierNote + ')' : ''}</p></div><button type="button" data-credit-pickup="${o.id}" class="px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-charcoal text-xs font-black cursor-pointer">اعتماد وإضافة +${pts.total} نقطة</button></div>`; }).join('')}
+          ${pendingPickups.length === 0 ? `<p class="text-xs text-ashMuted rounded-xl bg-charcoal border border-white/10 p-3">لا توجد طلبات استلام إلكترونية معلّقة لهذا العميل.</p>` : pendingPickups.map((o) => { const pts = PizzaLoyalty.calculateOrderPoints(o.total); return `<div class="rounded-xl bg-charcoal border border-white/10 p-3.5 flex flex-wrap items-center justify-between gap-3"><div class="text-xs"><p class="font-black text-chalk">#${o.id} • ${o.total} ر.س</p><p class="text-ashMuted">${o.branchName} • ${o.isoDate}</p><p class="text-amber-300 font-bold mt-0.5">يستحق: +${pts.total} نقطة ${pts.tierNote ? '(' + pts.tierNote + ')' : ''}</p></div>${sum.balance >= 100 && !o.pointsDiscountSar ? `<button type="button" data-pickup-autodisc="${o.id}" class="px-3.5 py-2.5 rounded-xl bg-parchment hover:bg-parchment/90 text-charcoal text-xs font-black cursor-pointer">خصم تلقائي (-${Math.min(Math.floor(sum.balance/100), Math.floor(o.total))} ر.س) للصرافة</button>` : ''}<button type="button" data-credit-pickup="${o.id}" class="px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-charcoal text-xs font-black cursor-pointer">اعتماد وإضافة +${pts.total} نقطة</button></div>`; }).join('')}
         </div>
         <form id="instoreReceiptForm" class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-3">
           <div class="flex items-center justify-between"><h4 class="text-xs font-black text-chalk">إضافة نقاط فاتورة مباشرة من الكاشير</h4><span id="instorePtsPreview" class="text-xs font-extrabold text-parchment">+0 نقطة</span></div>
@@ -316,7 +323,8 @@
       } else document.getElementById('passError').classList.remove('hidden');
     });
     document.getElementById('lockNowBtn').addEventListener('click', () => { stopCamera(); document.getElementById('passInput').value = ''; document.getElementById('dashboardApp').classList.add('hidden'); document.getElementById('lockScreen').classList.remove('hidden'); });
-    document.getElementById('tabLiveBtn').addEventListener('click', () => { stopCamera(); activeTab = 'live'; renderDashboard(); });
+    document.getElementById('tabPosBtn').addEventListener('click', () => { stopCamera(); activeTab = 'pos'; renderDashboard(); });
+    document.getElementById('tabLiveBtn').addEventListener('click', () => { stopCamera(); if (window.PizzaPos) PizzaPos.stopPosCamera(); activeTab = 'live'; renderDashboard(); });
     document.getElementById('tabScannerBtn').addEventListener('click', () => { activeTab = 'scanner'; renderDashboard(); });
     document.getElementById('tabArchiveBtn').addEventListener('click', () => { stopCamera(); activeTab = 'archive'; renderDashboard(); });
     document.getElementById('liveRegionFilter').addEventListener('change', (e) => { liveRegion = e.target.value; renderDashboard(); });
@@ -366,9 +374,12 @@
       tbody.innerHTML = rows.map((o) => { const st = STATUS_MAP[o.status] || STATUS_MAP.new; return `<tr data-open-detail="${o.id}" class="hover:bg-white/[0.05] cursor-pointer transition-colors"><td class="p-3.5 whitespace-nowrap text-ashMuted">${o.isoDate} <span class="text-[11px] block">${o.createdAt}</span></td><td class="p-3.5 font-black text-chalk">#${o.id}</td><td class="p-3.5"><span class="font-bold text-chalk block">${o.customerName}</span><span dir="ltr" class="text-[11px] text-emerald-400">${o.customerPhone}</span></td><td class="p-3.5"><span class="text-chalk block">${o.branchName}</span><span class="text-[11px] text-ashMuted">${o.regionName}</span></td><td class="p-3.5 text-parchment font-bold">${o.payment}</td><td class="p-3.5 font-black text-chalk">${o.total} ر.س</td><td class="p-3.5 text-xs font-extrabold ${o.pointsAwarded ? 'text-emerald-400' : 'text-ashMuted'}">${o.pointsAwarded ? '+' + o.pointsAwardedAmount : '—'}</td><td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full border text-[11px] font-extrabold ${st.cls}">${st.label}</span></td></tr>`; }).join('');
     }
     function renderDashboard() {
+      document.getElementById('posPanel').classList.toggle('hidden', activeTab !== 'pos');
       document.getElementById('livePanel').classList.toggle('hidden', activeTab !== 'live');
       document.getElementById('scannerPanel').classList.toggle('hidden', activeTab !== 'scanner');
       document.getElementById('archivePanel').classList.toggle('hidden', activeTab !== 'archive');
+      document.getElementById('tabPosBtn').className = `inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'pos' ? 'bg-emerald-400 text-charcoal' : 'bg-emerald-400/15 border border-emerald-400/35 text-emerald-300 hover:bg-emerald-400/25'}`;
+      if (activeTab === 'pos' && window.PizzaPos) PizzaPos.renderPosPanel();
       document.getElementById('tabLiveBtn').className = `px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'live' ? 'bg-chalk text-charcoal' : 'bg-slateLight text-ashMuted hover:text-chalk'}`;
       document.getElementById('tabScannerBtn').className = `inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'scanner' ? 'bg-amber-400 text-charcoal' : 'bg-amber-400/15 border border-amber-400/35 text-amber-300 hover:bg-amber-400/25'}`;
       document.getElementById('tabArchiveBtn').className = `px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'archive' ? 'bg-chalk text-charcoal' : 'bg-slateLight text-ashMuted hover:text-chalk'}`;
@@ -391,6 +402,20 @@
     document.addEventListener('click', (e) => {
       const tab = e.target.closest('[data-status-tab]'); if (tab) { liveStatus = tab.getAttribute('data-status-tab'); renderDashboard(); return; }
       const next = e.target.closest('[data-next]'); if (next) { e.stopPropagation(); updateOrderStatus(next.getAttribute('data-oid'), next.getAttribute('data-next')); return; }
+      const autoDiscBtn = e.target.closest('[data-pickup-autodisc]');
+      if (autoDiscBtn && window.PizzaLoyalty) {
+        const oid = autoDiscBtn.getAttribute('data-pickup-autodisc'), ord = orders.find((o) => o.id === oid);
+        if (ord && !ord.pointsDiscountSar) {
+          const sum = PizzaLoyalty.getCustomerSummary(ord.customerPhone);
+          const maxPts = Math.floor(Math.min(sum.balance, Math.floor(ord.total) * 100) / 100) * 100;
+          const discSar = Math.floor(maxPts / 100);
+          if (discSar > 0) {
+            const rtx = PizzaLoyalty.recordTransaction({ phone: ord.customerPhone, customerName: ord.customerName, delta: -maxPts, type: 'redeem', orderId: ord.id, reason: `خصم باركود استلام #${ord.id} (-${discSar} ر.س)` });
+            if (rtx.ok) { ord.subtotal = ord.subtotal || ord.total; ord.pointsRedeemed = (ord.pointsRedeemed || 0) + maxPts; ord.pointsDiscountSar = (ord.pointsDiscountSar || 0) + discSar; ord.total = Math.max(0, ord.total - discSar); saveAndSync(); showScanFeedback(`تم خصم -${discSar} ر.س تلقائياً! المبلغ المطلوب بالصرافة الآن: ${ord.total} ر.س`, false); renderDashboard(); if (scannedPhone) renderScannedCustomer(scannedPhone); }
+          }
+        }
+        return;
+      }
       const creditBtn = e.target.closest('[data-credit-pickup]');
       if (creditBtn && window.PizzaLoyalty) {
         const oid = creditBtn.getAttribute('data-credit-pickup'), ord = orders.find((o) => o.id === oid);
