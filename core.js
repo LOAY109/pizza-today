@@ -121,7 +121,7 @@ function safeRead(key, fallback) {
         }
       }, 36);
 
-      setTimeout(finishSplash, 2400);
+      setTimeout(finishSplash, 2200);
     }
     function openRegionGate() {
       const grid = document.getElementById('regionGateGrid');
@@ -473,7 +473,9 @@ function safeRead(key, fallback) {
 
       state.pendingAuth = { name, phone, email, code, deliveredExternally };
       document.getElementById('otpTargetEmail').textContent = email;
-      document.getElementById('otpDeliveryNote').textContent = deliveredExternally ? 'تفقد صندوق الوارد لإدخال الرمز.' : 'أدخل الرمز المكون من 4 أرقام.';
+      document.getElementById('otpDeliveryNote').textContent = deliveredExternally
+        ? 'تفقد صندوق الوارد لإدخال الرمز.'
+        : 'أدخل الرمز المكون من 4 أرقام.';
       document.getElementById('otpInput').value = '';
       document.getElementById('otpError').classList.add('hidden');
       document.getElementById('authStep1Form').classList.add('hidden');
