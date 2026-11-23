@@ -111,7 +111,8 @@
         </button>
 
         <!-- Account / Login Button -->
-        <button id="openAuthBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-chalk text-xs sm:text-sm font-bold cursor-pointer transition-colors">
+        <button id="openVipBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-xs font-extrabold cursor-pointer transition-colors"><i data-lucide="award" class="w-4 h-4"></i><span id="navVipPoints" class="tabular-nums">نقاطي</span></button>
+          <button id="openAuthBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-chalk text-xs sm:text-sm font-bold cursor-pointer transition-colors">
           <i data-lucide="user" class="w-4 h-4 text-parchment"></i>
           <span id="navUserLabel" class="max-w-[82px] truncate hidden sm:inline">تسجيل الدخول</span>
         </button>
@@ -630,7 +631,27 @@
             <input id="cartNotesInput" type="text" placeholder="ملاحظات عامة للطلب (اختياري)..." class="w-full px-3 py-2 rounded-xl bg-slateLight border border-white/15 text-xs text-chalk placeholder:text-ashMuted/60 focus:outline-none focus:border-chalk" />
           </div>
 
-          <div class="flex items-center justify-between text-base font-extrabold pt-1">
+          <div id="cartLoyaltyBox" class="rounded-2xl bg-slateWood border border-amber-400/25 p-3 space-y-2">
+          <div class="flex items-center justify-between gap-2 text-xs">
+            <span class="inline-flex items-center gap-1.5 font-extrabold text-amber-300"><i data-lucide="award" class="w-4 h-4"></i><span>نقاط بيتزا اليوم</span></span>
+            <span id="cartEarnPreview" class="text-[11px] font-extrabold text-parchment">+0 نقطة مع الطلب</span>
+          </div>
+          <div id="cartRedeemRow" class="hidden pt-2 border-t border-white/10 space-y-2">
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-ashMuted">رصيدك المتاح: <strong id="cartAvailPts" class="text-chalk">0 نقطة</strong> (<span id="cartAvailSar">0</span> ر.س)</span>
+              <span class="text-emerald-400 font-extrabold">خصم: <span id="cartRedeemSar">0</span> ر.س</span>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] text-ashMuted">استبدال (100 نقطة = 1 ريال)</span>
+              <div class="inline-flex items-center gap-1.5 bg-charcoal border border-white/15 rounded-lg p-0.5">
+                <button id="redeemPtsPlusBtn" type="button" class="w-7 h-7 rounded bg-parchment text-charcoal font-black text-xs cursor-pointer">+</button>
+                <span id="cartRedeemPtsVal" class="min-w-[44px] text-center text-xs font-black text-chalk tabular-nums">0</span>
+                <button id="redeemPtsMinusBtn" type="button" class="w-7 h-7 rounded bg-slateLight text-chalk font-black text-xs cursor-pointer">-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-base font-extrabold pt-1">
             <span class="text-ashMuted">الإجمالي النهائي</span>
             <span id="cartTotalPrice" class="text-parchment text-xl">0 ر.س</span>
           </div>
@@ -668,12 +689,28 @@
   </div>
 
   <!-- Toast Notification -->
+  <div id="vipModal" class="hidden fixed inset-0 z-50 bg-black/82 backdrop-blur-sm p-3 sm:p-4 flex items-center justify-center">
+    <div class="w-full max-w-lg max-h-[92vh] bg-slateWood rounded-3xl border border-white/15 flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-charcoal/80">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-amber-400/15 border border-amber-400/35 text-amber-300 flex items-center justify-center"><i data-lucide="award" class="w-5 h-5"></i></span>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-chalk">بطاقة العميل المميز</h3>
+            <p class="text-[11px] text-ashMuted">كل 100 نقطة = 1 ريال خصم فوري</p>
+          </div>
+        </div>
+        <button id="closeVipBtn" type="button" aria-label="إغلاق" class="w-9 h-9 rounded-xl bg-slateLight hover:bg-white/15 flex items-center justify-center text-chalk cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="vipModalBody" class="flex-1 overflow-y-auto p-5 space-y-5"></div>
+    </div>
+  </div>
   <div id="toastBanner" role="status" aria-live="polite" class="fixed bottom-20 md:bottom-6 start-1/2 -translate-x-1/2 z-[80] hidden px-5 py-3 rounded-2xl bg-chalk text-charcoal font-bold text-sm shadow-2xl items-center gap-2">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
     <span id="toastMessage">تمت الإضافة</span>
   </div>
 
-  <script src="data.js"></script>
+  <script src="loyalty.js"></script>
+<script src="data.js"></script>
 <script src="core.js"></script>
 <script src="ui.js"></script>
 </body>
