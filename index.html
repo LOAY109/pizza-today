@@ -111,7 +111,8 @@
         </button>
 
         <!-- Account / Login Button -->
-        <button id="openVipBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-xs font-extrabold cursor-pointer transition-colors"><i data-lucide="award" class="w-4 h-4"></i><span id="navVipPoints" class="tabular-nums">نقاطي</span></button>
+        <button id="openQrFullBtn" type="button" aria-label="عرض رمز QR الخاص بك" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-chalk/10 hover:bg-chalk/20 border border-white/20 text-chalk text-xs font-black cursor-pointer transition-colors"><i data-lucide="qr-code" class="w-4 h-4 text-parchment"></i><span>QR</span></button>
+          <button id="openVipBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 text-amber-300 text-xs font-extrabold cursor-pointer transition-colors"><i data-lucide="award" class="w-4 h-4"></i><span id="navVipPoints" class="tabular-nums">نقاطي</span></button>
           <button id="openAuthBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-chalk text-xs sm:text-sm font-bold cursor-pointer transition-colors">
           <i data-lucide="user" class="w-4 h-4 text-parchment"></i>
           <span id="navUserLabel" class="max-w-[82px] truncate hidden sm:inline">تسجيل الدخول</span>
@@ -633,7 +634,7 @@
 
           <div id="cartLoyaltyBox" class="rounded-2xl bg-slateWood border border-amber-400/25 p-3 space-y-2">
           <div class="flex items-center justify-between gap-2 text-xs">
-            <span class="inline-flex items-center gap-1.5 font-extrabold text-amber-300"><i data-lucide="award" class="w-4 h-4"></i><span>نقاط بيتزا اليوم</span></span>
+            <span class="inline-flex items-center gap-1.5 font-extrabold text-amber-300"><i data-lucide="award" class="w-4 h-4"></i><span>نقاط بيتزا اليوم (بكل فروع المملكة)</span></span>
             <span id="cartEarnPreview" class="text-[11px] font-extrabold text-parchment">+0 نقطة مع الطلب</span>
           </div>
           <p id="cartPickupCodNote" class="hidden text-[11px] text-parchment font-bold pt-1 border-t border-white/10">عند الاستلام: اعرض رمز QR للكاشير لتحديد النقاط والخصم مباشرة عند الدفع.</p><div id="cartRedeemRow" class="hidden pt-2 border-t border-white/10 space-y-2">
@@ -704,6 +705,7 @@
       <div id="vipModalBody" class="flex-1 overflow-y-auto p-5 space-y-5"></div>
     </div>
   </div>
+  <div id="qrFullscreenModal" class="hidden fixed inset-0 z-[70] bg-charcoal/98 backdrop-blur-md p-4 flex flex-col items-center justify-center"><button id="closeQrFullBtn" type="button" aria-label="إغلاق شاشة QR" class="fixed top-4 end-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-chalk text-xs font-black cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i><span>إغلاق</span></button><div id="qrFullscreenBody" class="w-full max-w-sm"></div></div>
   <div id="toastBanner" role="status" aria-live="polite" class="fixed bottom-20 md:bottom-6 start-1/2 -translate-x-1/2 z-[80] hidden px-5 py-3 rounded-2xl bg-chalk text-charcoal font-bold text-sm shadow-2xl items-center gap-2">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
     <span id="toastMessage">تمت الإضافة</span>
