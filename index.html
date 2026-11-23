@@ -59,7 +59,342 @@
           <div id="splashProgressBar" class="h-full rounded-full bg-gradient-to-l from-chalk to-parchment transition-all duration-150" style="width: 0%;"></div>
         </div>
         <div class="flex items-center justify-between text-xs font-bold">
-          <span class="text-ashMuted/80">جميع الحقوق محفوظة © بيتزا اليوم</span>
+          <span id="splashStatusText" class="text-ashMuted">جاري تسخين الفرن...</span>
+          <span id="splashPercent" class="text-parchment tabular-nums">0%</span>
+        </div>
+        <p id="splashSpeedBadge" class="text-[11px] text-ashMuted/75 font-body">جاري قياس سرعة الاتصال...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Startup Saudi Region Selector Modal -->
+  <div id="regionGateModal" class="hidden fixed inset-0 z-[85] bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
+    <div class="w-full max-w-xl bg-slateWood rounded-3xl border border-white/15 p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="text-center space-y-3">
+        <img src="assets/logo.webp" alt="بيتزا اليوم" class="h-14 w-auto mx-auto object-contain" />
+        <h2 class="text-2xl sm:text-3xl font-black text-chalk">اختر منطقتك في المملكة</h2>
+        <p class="text-xs sm:text-sm text-ashMuted font-body max-w-md mx-auto">
+          تتواجد فروع بيتزا اليوم على مستوى المملكة العربية السعودية. حدّد منطقتك لنعرض لك أقرب الفروع وساعات العمل والتوصيل.
+        </p>
+      </div>
+
+      <div id="regionGateGrid" class="grid sm:grid-cols-2 gap-3"></div>
+
+      <div class="text-center pt-1">
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation (Public Customer Only — No Cashier Portal Button) -->
+  <header class="fixed top-0 inset-x-0 z-40 glass-nav border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+      <a href="#top" aria-label="بيتزا اليوم - الصفحة الرئيسية" class="flex items-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-chalk rounded-lg">
+        <img
+          src="assets/logo.webp"
+          alt="شعار بيتزا اليوم Pizza Today"
+          class="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_2px_10px_rgba(255,255,255,0.12)]"
+        />
+      </a>
+
+      <nav aria-label="التنقل الرئيسي" class="hidden lg:flex items-center gap-6 text-sm font-semibold text-ashMuted">
+        <a href="#featured" class="hover:text-chalk transition-colors py-2">الأكثر طلباً</a>
+        <a href="#menu" class="hover:text-chalk transition-colors py-2">المنيو (24 صنف)</a>
+        <a href="#reviews" class="hover:text-chalk transition-colors py-2">آراء الزبائن</a>
+        <a href="#branches" class="hover:text-chalk transition-colors py-2">فروع السعودية</a>
+      </nav>
+
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Region Pill -->
+        <button id="openRegionBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-parchment/15 hover:bg-parchment/25 border border-parchment/35 text-parchment text-xs font-extrabold cursor-pointer transition-colors">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+          <span id="navRegionLabel" class="max-w-[96px] truncate">حفر الباطن</span>
+        </button>
+
+        <!-- Account / Login Button -->
+        <button id="openAuthBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-chalk text-xs sm:text-sm font-bold cursor-pointer transition-colors">
+          <i data-lucide="user" class="w-4 h-4 text-parchment"></i>
+          <span id="navUserLabel" class="max-w-[82px] truncate hidden sm:inline">تسجيل الدخول</span>
+        </button>
+
+        <!-- Cart & Order History Button -->
+        <button id="openCartBtn" type="button" aria-label="فتح السلة وسجل الطلبات" class="relative inline-flex items-center gap-1.5 px-3 py-2 min-h-[42px] rounded-xl bg-chalk hover:bg-chalkHover text-charcoal text-xs sm:text-sm font-black cursor-pointer transition-colors">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">السلة</span>
+          <span id="navCartCount" class="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-charcoal text-chalk text-[11px] font-black">0</span>
+        </button>
+
+        <button id="mobileMenuBtn" type="button" aria-label="القائمة" aria-expanded="false" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slateLight border border-white/15 text-chalk cursor-pointer">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Nav -->
+    <div id="mobileNavPanel" class="hidden lg:hidden border-t border-white/10 bg-charcoal/95 px-4 py-3 space-y-1">
+      <a href="#featured" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-sm font-semibold text-chalk hover:bg-white/5">الأكثر طلباً</a>
+      <a href="#menu" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-sm font-semibold text-chalk hover:bg-white/5">المنيو الكامل (24 صنف)</a>
+      <a href="#reviews" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-sm font-semibold text-chalk hover:bg-white/5">آراء الزبائن</a>
+      <a href="#branches" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-sm font-semibold text-chalk hover:bg-white/5">فروع السعودية</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Active In-Progress Order Banner ONLY (auto-hides once order is completed/cancelled & moves to Cart History) -->
+    <div id="liveOrderBanner" class="hidden fixed top-[66px] inset-x-0 z-30 bg-slateWood/95 backdrop-blur-md border-b border-parchment/30">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-extrabold text-chalk" id="liveBannerOrderId">طلب #PT-1001</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-parchment/20 text-parchment font-bold text-xs" id="liveBannerStatus">تم استلام الطلب</span>
+        </div>
+        <button id="bannerOpenTrackerBtn" type="button" class="inline-flex items-center gap-1 text-xs font-extrabold text-chalk hover:text-parchment cursor-pointer">
+          <span>متابعة الطلب المباشر</span>
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[86vh] flex items-end sm:items-center pt-28 pb-16 overflow-hidden">
+      <img
+        src="assets/hero.webp"
+        alt="بيتزا طازجة ساخنة بالفرن من بيتزا اليوم"
+        class="absolute inset-0 w-full h-full object-cover object-center scale-105 grayscale-[16%] contrast-[1.06]"
+      />
+      <div class="absolute inset-0 hero-gradient"></div>
+
+      <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full">
+        <div class="max-w-2xl space-y-6">
+          <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-charcoal/85 border border-white/15 text-xs sm:text-sm font-semibold text-parchment">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="heroRegionStatus">منطقة حفر الباطن • الطلب المباشر متاح الآن</span>
+          </div>
+
+          <div class="pt-1">
+            <img
+              src="assets/logo.webp"
+              alt="بيتزا اليوم - Pizza Today"
+              class="h-20 sm:h-24 w-auto object-contain mb-4 drop-shadow-[0_6px_24px_rgba(0,0,0,0.8)]"
+            />
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.22] tracking-tight text-chalk">
+              طعم الفرن الكلاسيكي
+              <span class="block text-parchment mt-1">
+                بعجينة طازجة يومياً في أنحاء المملكة
+              </span>
+            </h1>
+          </div>
+
+          <p class="text-base sm:text-lg text-ashMuted font-body leading-relaxed max-w-xl">
+            أكثر من 10 سنوات من الخبرة و24 صنف بيتزا طازجة تبدأ من <strong class="text-chalk">10 ريال</strong> فقط — خصّص سُمك العجينة والصوصات وحدّد موقعك على الخريطة ليصلك طلبك ساخناً.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <a href="#menu" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl bg-chalk hover:bg-chalkHover text-charcoal font-extrabold text-sm sm:text-base shadow-xl shadow-black/40 transition-all cursor-pointer">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+              <span>ابدأ طلبك الآن</span>
+            </a>
+
+            <button id="heroChangeRegionBtn" type="button" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 min-h-[48px] rounded-xl bg-slateWood/90 hover:bg-slateLight border border-white/20 text-chalk font-bold text-sm sm:text-base transition-colors cursor-pointer">
+              <i data-lucide="globe" class="w-4 h-4 text-parchment"></i>
+              <span>تغيير المنطقة</span>
+            </button>
+
+            <a href="#branches" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 min-h-[48px] rounded-xl bg-parchment/15 hover:bg-parchment/25 border border-parchment/40 text-parchment font-bold text-sm sm:text-base transition-colors cursor-pointer">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              <span>فروع منطقتك</span>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 sm:gap-5 pt-4 max-w-lg">
+            <div class="rounded-2xl bg-slateWood/90 border border-white/10 p-3.5">
+              <div class="flex items-center gap-1.5 text-parchment font-extrabold text-lg sm:text-xl">
+                <i data-lucide="star" class="w-4 h-4 fill-parchment"></i>
+                <span>4.2</span>
+              </div>
+              <p class="text-xs text-ashMuted mt-0.5">+5,100 تقييم قوقل</p>
+            </div>
+            <div class="rounded-2xl bg-slateWood/90 border border-white/10 p-3.5">
+              <div class="text-chalk font-extrabold text-lg sm:text-xl">13+ فرع</div>
+              <p class="text-xs text-ashMuted mt-0.5">على مستوى السعودية</p>
+            </div>
+            <div class="rounded-2xl bg-slateWood/90 border border-white/10 p-3.5">
+              <div class="text-chalk font-extrabold text-lg sm:text-xl">10 ر.س</div>
+              <p class="text-xs text-ashMuted mt-0.5">أسعار تبدأ من</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Signature Highlights Section -->
+    <section id="featured" class="py-16 sm:py-20 border-t border-white/10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-5 reveal">
+            <div class="relative rounded-3xl overflow-hidden border border-white/15 shadow-2xl">
+              <img
+                src="assets/featured.webp"
+                alt="بيتزا داينمايت الدجاج والجبن الذائب"
+                class="w-full h-72 sm:h-96 object-cover"
+              />
+              <div class="absolute bottom-4 inset-x-4 rounded-2xl bg-charcoal/90 backdrop-blur-md border border-white/15 p-4 flex items-center justify-between gap-3">
+                <div>
+                  <span class="text-xs font-bold text-parchment">الأكثر ترشيحاً في المملكة</span>
+                  <h3 class="text-base font-extrabold text-chalk">بيتزا داينمايت الدجاج</h3>
+                </div>
+                <span class="px-3.5 py-1.5 rounded-xl bg-chalk text-charcoal font-black text-sm shrink-0">23 ر.س</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-6 reveal">
+            <div>
+              <span class="text-xs font-bold tracking-widest uppercase text-parchment font-serif">Signature Selection</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-chalk mt-1">أصناف لا تفوّت تجربتها</h2>
+              <p class="text-sm sm:text-base text-ashMuted font-body mt-2">
+                صور فعلية لكل صنف — اضغط لتخصيص سُمك العجينة، الحجم، والصوصات الإضافية.
+              </p>
+            </div>
+            <div id="featuredGrid" class="grid sm:grid-cols-2 gap-4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Full Interactive Menu Section (24 Real Photos) -->
+    <section id="menu" class="py-16 sm:py-20 wood-band border-y border-white/10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 reveal">
+          <div>
+            <span class="text-xs font-bold tracking-widest uppercase text-parchment font-serif">Official Menu</span>
+            <h2 class="text-3xl sm:text-4xl font-black text-chalk mt-1">تشكيلة بيتزا اليوم (24 صنف بالصور)</h2>
+            <p class="text-sm sm:text-base text-ashMuted font-body mt-1.5">
+              كل صنف بصورته الفعلية من المنيو الرسمي مع السعر والسعرات الحرارية وإمكانية التخصيص الكامل.
+            </p>
+          </div>
+
+          <button id="openMenuPhotoBtn" type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-slateLight hover:bg-white/15 border border-white/20 text-chalk text-sm font-bold cursor-pointer transition-colors shrink-0">
+            <i data-lucide="image" class="w-4 h-4 text-parchment"></i>
+            <span>عرض صورة المنيو الورقي</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 reveal">
+          <div class="relative max-w-md">
+            <i data-lucide="search" class="w-4 h-4 text-ashMuted absolute top-1/2 -translate-y-1/2 start-4 pointer-events-none"></i>
+            <input
+              id="menuSearchInput"
+              type="search"
+              placeholder="ابحث عن بيتزا (مثل: داينمايت، محمرة، بيبروني، شاورما)..."
+              aria-label="ابحث في المنيو"
+              class="w-full ps-11 pe-4 py-3 rounded-xl bg-charcoal border border-white/15 text-sm text-chalk placeholder:text-ashMuted/70 focus:outline-none focus:border-chalk transition-colors"
+            />
+          </div>
+
+          <div id="categoryFilters" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" role="tablist" aria-label="تصنيفات المنيو"></div>
+        </div>
+
+        <div id="menuGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <div id="emptyMenuState" class="hidden text-center py-12 rounded-2xl bg-charcoal/80 border border-white/10">
+          <i data-lucide="search-x" class="w-10 h-10 text-ashMuted mx-auto mb-3"></i>
+          <p class="text-chalk font-bold">ما لقينا صنف يطابق بحثك</p>
+          <button id="resetFiltersBtn" type="button" class="mt-3 px-4 py-2 rounded-xl bg-chalk text-charcoal text-sm font-bold cursor-pointer">عرض كل الأصناف</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Google Maps Reviews Section -->
+    <section id="reviews" class="py-16 sm:py-20">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 reveal">
+          <div>
+            <span class="text-xs font-bold tracking-widest uppercase text-parchment font-serif">Google Maps Reviews</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-chalk mt-1">آراء زبائن بيتزا اليوم في المملكة</h2>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5 reveal">
+          <article class="card-elevated rounded-2xl p-6 flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-1 text-parchment">
+                <i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i>
+              </div>
+              <p class="text-chalk/90 text-sm sm:text-base font-body leading-relaxed">
+                «أفضل مطعم بيتزا في منطقة الرياض متفوق حتى على مطاعم بيتزا عالمية، مذاق البيتزا غير في بيتزا اليوم.»
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-white/10 text-xs text-ashMuted">
+              <span class="font-bold text-chalk">تقييم عميل — فرع الروابي، الرياض</span>
+              <span>قوقل ماب</span>
+            </div>
+          </article>
+
+          <article class="card-elevated rounded-2xl p-6 flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-1 text-parchment">
+                <i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i>
+              </div>
+              <p class="text-chalk/90 text-sm sm:text-base font-body leading-relaxed">
+                «مطعم البيتزا المفضل قديم جداً في الحفر، رخيص وطعمه حلو — جربوا برجر دجاج وديناميت وصدور دجاج.»
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-white/10 text-xs text-ashMuted">
+              <span class="font-bold text-chalk">تقييم عميل — حفر الباطن</span>
+              <span>قوقل ماب</span>
+            </div>
+          </article>
+
+          <article class="card-elevated rounded-2xl p-6 flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-1 text-parchment">
+                <i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i><i data-lucide="star" class="w-4 h-4 fill-parchment"></i>
+              </div>
+              <p class="text-chalk/90 text-sm sm:text-base font-body leading-relaxed">
+                «من أفضل محلات البيتزا في الرس، عجينتهم خفيفة والطلب ياخذ 10 دقايق ويكون جاهز، دائماً آخذ رانش وديناميت.»
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-white/10 text-xs text-ashMuted">
+              <span class="font-bold text-chalk">تقييم عميل — الرس، القصيم</span>
+              <span>قوقل ماب</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- All Saudi Branches Section -->
+    <section id="branches" class="py-16 sm:py-20 wood-band border-t border-white/10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 reveal">
+          <div>
+            <span class="text-xs font-bold tracking-widest uppercase text-parchment font-serif">KSA Branches</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-chalk mt-1">فروع بيتزا اليوم على مستوى السعودية</h2>
+            <p class="text-sm sm:text-base text-ashMuted font-body mt-1.5">
+              تصفّح الفروع حسب المنطقة لمعرفة ساعات العمل والاتصال المباشر والتوجه عبر خرائط قوقل.
+            </p>
+          </div>
+        </div>
+
+        <!-- Region Filter Tabs -->
+        <div id="branchRegionTabs" class="flex flex-wrap gap-2 reveal"></div>
+        <!-- Branch Selector Pills within Active Region -->
+        <div id="branchTabs" class="flex flex-wrap gap-2 reveal" role="tablist" aria-label="فروع المنطقة"></div>
+        <!-- Active Branch Card -->
+        <div id="branchDetailCard" class="card-elevated rounded-3xl p-6 sm:p-8 reveal"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer with Pizza Today Attribution -->
+  <footer class="border-t border-white/10 bg-charcoal py-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-ashMuted">
+      <div class="flex items-center gap-3.5">
+        <img src="assets/logo.webp" alt="شعار بيتزا اليوم" class="h-10 w-auto object-contain" />
+        <span>• المملكة العربية السعودية</span>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-5">
+        <span class="text-ashMuted/80">جميع الحقوق محفوظة © بيتزا اليوم</span>
       </div>
     </div>
   </footer>
@@ -266,7 +601,7 @@
               </button>
             </div>
             <div id="deliveryMiniMapWrap" class="hidden space-y-2">
-                <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center justify-between gap-2">
                   <span class="text-[11px] text-ashMuted font-bold">خرائط جوجل المحدّثة</span>
                   <div class="inline-flex rounded-lg bg-charcoal border border-white/15 p-0.5 text-[10px] font-extrabold">
                     <button id="mapLayerStreetBtn" type="button" class="px-2.5 py-1 rounded-md bg-chalk text-charcoal cursor-pointer">خريطة</button>
@@ -274,8 +609,8 @@
                   </div>
                 </div>
                 <div id="deliveryMiniMap" class="w-full h-52 rounded-xl overflow-hidden border border-white/15"></div>
-                <p id="mapCoordsReadout" class="text-[11px] text-parchment font-bold">اسحب الدبوس أو اضغط على الخريطة لتحديد موقعك بدقة</p>
-              </div>
+              <p id="mapCoordsReadout" class="text-[11px] text-parchment font-bold">اسحب الدبوس أو اضغط على الخريطة لتحديد موقعك بالضبط</p>
+            </div>
             <input id="deliveryAddressInput" type="text" placeholder="اسم الحي / الشارع / وصف المنزل..." class="w-full px-3 py-2 rounded-xl bg-charcoal border border-white/15 text-xs text-chalk placeholder:text-ashMuted/60 focus:outline-none focus:border-chalk" />
           </div>
 
