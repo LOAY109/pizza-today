@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>لوحة الكاشير وقاعدة الطلبات | بيتزا اليوم — ألفا فورال</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Cairo', 'Tajawal', 'sans-serif'] },
+          colors: {
+            charcoal: '#0A0A0A',
+            slateWood: '#151515',
+            slateLight: '#212121',
+            chalk: '#FAF9F6',
+            parchment: '#D8C3A5',
+            ashMuted: '#A3A3A3',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #0A0A0A;
+      color: #FAF9F6;
+      background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px);
+    }
+    .card-panel {
+      background: linear-gradient(180deg, rgba(29,29,29,0.9) 0%, rgba(18,18,18,0.98) 100%);
+      border: 1px solid rgba(250,249,246,0.1);
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+
+  <!-- Staff Password Lock Screen (Password: اليوم) -->
+  <main id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md card-panel rounded-3xl p-7 sm:p-8 text-center space-y-6 shadow-2xl">
+      <img src="assets/logo.webp" alt="بيتزا اليوم" class="h-14 w-auto mx-auto object-contain" />
+      <div class="space-y-1.5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-parchment/15 border border-parchment/30 text-parchment text-xs font-extrabold">
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+          <span>صفحة الكاشير الخاصة</span>
+        </span>
+        <h1 class="text-2xl font-black text-chalk pt-1">بوابة موظفي بيتزا اليوم</h1>
+        <p class="text-xs text-ashMuted">أدخل كلمة المرور للدخول إلى استقبال الطلبات وقاعدة البيانات السنوية.</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4 text-start">
+        <div>
+          <label for="passInput" class="block text-xs font-bold text-ashMuted mb-1.5">كلمة المرور</label>
+          <input id="passInput" type="password" required placeholder="أدخل كلمة المرور..." class="w-full px-4 py-3.5 rounded-xl bg-charcoal border border-white/15 text-center text-base font-bold text-chalk focus:outline-none focus:border-chalk" />
+          <p id="passError" class="hidden text-xs text-rose-400 font-bold text-center mt-2">كلمة المرور غير صحيحة</p>
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-chalk hover:bg-neutral-200 text-charcoal font-black text-sm cursor-pointer transition-colors">
+          دخول لوحة الكاشير
+        </button>
+      </form>
+
+      <p class="text-[11px] text-ashMuted/70 pt-2">نظام الكاشير السحابي — <strong class="text-parchment">ألفا فورال | Alpha For All</strong></p>
+    </div>
+  </main>
+
+  <!-- Unlocked Cashier Dashboard + Annual Orders Database -->
+  <div id="dashboardApp" class="hidden min-h-screen flex flex-col">
+    <header class="sticky top-0 z-30 bg-charcoal/90 backdrop-blur-md border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img src="assets/logo.webp" alt="بيتزا اليوم" class="h-10 w-auto object-contain" />
+          <div>
+            <span class="block text-sm sm:text-base font-black text-chalk">لوحة الكاشير وقاعدة البيانات</span>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              متصل لحظياً بطلبات الموقع
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="tabLiveBtn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer transition-colors">الطلبات المباشرة</button>
+          <button id="tabArchiveBtn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors">سجل الطلبات السنوي (DB)</button>
+          <button id="lockNowBtn" type="button" aria-label="قفل اللوحة" class="p-2.5 rounded-xl bg-slateLight border border-white/15 text-ashMuted hover:text-chalk cursor-pointer">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <!-- KPI Strip -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="card-panel rounded-2xl p-4">
+          <p class="text-xs text-ashMuted font-bold">طلبات جديدة</p>
+          <p id="kpiNew" class="text-3xl font-black text-amber-400 mt-1">0</p>
+        </div>
+        <div class="card-panel rounded-2xl p-4">
+          <p class="text-xs text-ashMuted font-bold">قيد التحضير</p>
+          <p id="kpiPrep" class="text-3xl font-black text-sky-400 mt-1">0</p>
+        </div>
+        <div class="card-panel rounded-2xl p-4">
+          <p class="text-xs text-ashMuted font-bold">مكتملة</p>
+          <p id="kpiDone" class="text-3xl font-black text-emerald-400 mt-1">0</p>
+        </div>
+        <div class="card-panel rounded-2xl p-4">
+          <p class="text-xs text-ashMuted font-bold">إجمالي المبيعات</p>
+          <p id="kpiSales" class="text-3xl font-black text-parchment mt-1">0 ر.س</p>
+        </div>
+      </div>
+
+      <!-- TAB 1: LIVE INCOMING ORDERS -->
+      <section id="livePanel" class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div id="liveStatusFilters" class="flex flex-wrap gap-2"></div>
+          <select id="liveRegionFilter" class="px-3.5 py-2 rounded-xl bg-slateWood border border-white/15 text-xs font-bold text-chalk">
+            <option value="all">جميع مناطق السعودية</option>
+            <option value="hafar">منطقة حفر الباطن</option>
+            <option value="riyadh">منطقة الرياض</option>
+            <option value="riyadh_gov">محافظات الرياض</option>
+            <option value="qassim">منطقة القصيم</option>
+          </select>
+        </div>
+
+        <div id="liveOrdersGrid" class="grid md:grid-cols-2 gap-4"></div>
+        <div id="liveEmptyState" class="hidden text-center py-14 rounded-3xl bg-slateWood border border-white/10 space-y-2">
+          <i data-lucide="inbox" class="w-10 h-10 text-ashMuted mx-auto"></i>
+          <p class="text-chalk font-extrabold">لا توجد طلبات حالياً في هذا التصنيف</p>
+          <p class="text-xs text-ashMuted">أي طلب يرسله العميل من الموقع سيظهر هنا فوراً مع تنبيه صوتي.</p>
+        </div>
+      </section>
+
+      <!-- TAB 2: ANNUAL DATABASE & ORDER ARCHIVE BY DATE -->
+      <section id="archivePanel" class="hidden space-y-5">
+        <div class="card-panel rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-black text-chalk">قاعدة بيانات وسجل الطلبات السنوي</h2>
+              <p class="text-xs text-ashMuted">فلتر حسب السنة، الشهر، أو تاريخ يوم محدد، وصدّر السجل بضغطة زر.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="exportCsvBtn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-chalk text-charcoal text-xs font-black cursor-pointer">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>تصدير CSV (Excel)</span>
+              </button>
+              <button id="exportJsonBtn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slateLight border border-white/15 text-chalk text-xs font-bold cursor-pointer">
+                <i data-lucide="database" class="w-4 h-4 text-parchment"></i>
+                <span>نسخة JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <select id="dbYearFilter" class="px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs font-bold text-chalk">
+              <option value="all">كل السنوات</option>
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+            </select>
+            <select id="dbMonthFilter" class="px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs font-bold text-chalk">
+              <option value="all">جميع الأشهر (طوال السنة)</option>
+              <option value="1">يناير (01)</option><option value="2">فبراير (02)</option><option value="3">مارس (03)</option>
+              <option value="4">أبريل (04)</option><option value="5">مايو (05)</option><option value="6">يونيو (06)</option>
+              <option value="7">يوليو (07)</option><option value="8">أغسطس (08)</option><option value="9">سبتمبر (09)</option>
+              <option value="10">أكتوبر (10)</option><option value="11">نوفمبر (11)</option><option value="12">ديسمبر (12)</option>
+            </select>
+            <input id="dbDateFilter" type="date" aria-label="تاريخ محدد" class="px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs font-bold text-chalk" />
+            <input id="dbSearchInput" type="search" placeholder="بحث برقم الطلب / الجوال / الاسم..." class="px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs text-chalk placeholder:text-ashMuted/60" />
+          </div>
+        </div>
+
+        <!-- Archive Table -->
+        <div class="card-panel rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs sm:text-sm text-start">
+              <thead class="bg-charcoal text-ashMuted border-b border-white/10">
+                <tr>
+                  <th class="p-3.5 text-start font-extrabold">التاريخ والوقت</th>
+                  <th class="p-3.5 text-start font-extrabold">رقم الطلب</th>
+                  <th class="p-3.5 text-start font-extrabold">العميل والجوال</th>
+                  <th class="p-3.5 text-start font-extrabold">المنطقة والفرع</th>
+                  <th class="p-3.5 text-start font-extrabold">الدفع</th>
+                  <th class="p-3.5 text-start font-extrabold">الإجمالي</th>
+                  <th class="p-3.5 text-start font-extrabold">الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="archiveTableBody" class="divide-y divide-white/5"></tbody>
+            </table>
+          </div>
+          <div id="archiveEmpty" class="hidden p-10 text-center text-ashMuted text-sm">لا توجد طلبات مطابقة للتاريخ أو الفلتر المحدد.</div>
+        </div>
+
+        <!-- Resend OTP Webhook Config -->
+        <div class="card-panel rounded-2xl p-5 space-y-3">
+          <h3 class="text-sm font-black text-chalk">إعدادات ربط Resend OTP (اختياري)</h3>
+          <p class="text-xs text-ashMuted">أدخل رابط خادم Resend (مثل Cloudflare Worker) لإرسال رموز التحقق تلقائياً لبريد العملاء دون كشف المفتاح.</p>
+          <div class="flex flex-wrap gap-2">
+            <input id="resendWebhookInput" type="url" dir="ltr" placeholder="https://your-worker.workers.dev/send-otp" class="flex-1 min-w-[240px] px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs text-chalk" />
+            <button id="saveWebhookBtn" type="button" class="px-4 py-2.5 rounded-xl bg-parchment text-charcoal text-xs font-black cursor-pointer">حفظ الرابط</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-white/10 py-6 text-center text-xs text-ashMuted">
+      نظام الكاشير وقاعدة البيانات السنوية — <strong class="text-parchment">ألفا فورال | Alpha For All</strong>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      orders: 'pt_ksa_orders_v2',
+      resendWebhook: 'pt_ksa_resend_webhook_v2',
+    };
+    const STATUS_MAP = {
+      new: { label: 'طلب جديد', cls: 'text-amber-400 bg-amber-400/15 border-amber-400/35' },
+      preparing: { label: 'قيد التحضير', cls: 'text-sky-400 bg-sky-400/15 border-sky-400/35' },
+      ready: { label: 'جاهز', cls: 'text-violet-300 bg-violet-400/15 border-violet-400/35' },
+      completed: { label: 'مكتمل', cls: 'text-emerald-400 bg-emerald-400/15 border-emerald-400/35' },
+      cancelled: { label: 'ملغي', cls: 'text-rose-400 bg-rose-400/15 border-rose-400/35' },
+    };
+
+    function safeRead(k, fb) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch (e) { return fb; } }
+    function safeWrite(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+    let orders = safeRead(STORAGE_KEYS.orders, []);
+    let activeTab = 'live';
+    let liveStatus = 'all';
+    let liveRegion = 'all';
+
+    let syncChannel = null;
+    try {
+      syncChannel = new BroadcastChannel('pizza_today_ksa_orders');
+      syncChannel.onmessage = (ev) => {
+        if (ev.data && ev.data.type === 'ORDERS_UPDATED') {
+          orders = safeRead(STORAGE_KEYS.orders, orders);
+          renderDashboard();
+        }
+      };
+    } catch (e) {}
+
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === STORAGE_KEYS.orders) {
+        orders = safeRead(STORAGE_KEYS.orders, []);
+        renderDashboard();
+      }
+    });
+
+    function saveAndSync() {
+      safeWrite(STORAGE_KEYS.orders, orders);
+      if (syncChannel) { try { syncChannel.postMessage({ type: 'ORDERS_UPDATED' }); } catch (e) {} }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = document.getElementById('passInput').value.trim();
+      if (val === 'اليوم') {
+        document.getElementById('passError').classList.add('hidden');
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('dashboardApp').classList.remove('hidden');
+        document.getElementById('resendWebhookInput').value = safeRead(STORAGE_KEYS.resendWebhook, '');
+        renderDashboard();
+      } else {
+        document.getElementById('passError').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('lockNowBtn').addEventListener('click', () => {
+      document.getElementById('passInput').value = '';
+      document.getElementById('dashboardApp').classList.add('hidden');
+      document.getElementById('lockScreen').classList.remove('hidden');
+    });
+
+    document.getElementById('tabLiveBtn').addEventListener('click', () => { activeTab = 'live'; renderDashboard(); });
+    document.getElementById('tabArchiveBtn').addEventListener('click', () => { activeTab = 'archive'; renderDashboard(); });
+    document.getElementById('liveRegionFilter').addEventListener('change', (e) => { liveRegion = e.target.value; renderDashboard(); });
+
+    ['dbYearFilter', 'dbMonthFilter', 'dbDateFilter', 'dbSearchInput'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', renderArchiveTable);
+      document.getElementById(id).addEventListener('change', renderArchiveTable);
+    });
+
+    document.getElementById('saveWebhookBtn').addEventListener('click', () => {
+      safeWrite(STORAGE_KEYS.resendWebhook, document.getElementById('resendWebhookInput').value.trim());
+    });
+
+    function getFilteredArchive() {
+      const y = document.getElementById('dbYearFilter').value;
+      const m = document.getElementById('dbMonthFilter').value;
+      const d = document.getElementById('dbDateFilter').value;
+      const q = document.getElementById('dbSearchInput').value.trim().toLowerCase();
+      return orders.filter((o) => {
+        if (y !== 'all' && String(o.year) !== y) return false;
+        if (m !== 'all' && String(o.month) !== m) return false;
+        if (d && o.isoDate !== d) return false;
+        if (q) {
+          const hay = `${o.id} ${o.customerName} ${o.customerPhone} ${o.branchName}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderArchiveTable() {
+      const rows = getFilteredArchive();
+      const tbody = document.getElementById('archiveTableBody');
+      const empty = document.getElementById('archiveEmpty');
+      if (rows.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      tbody.innerHTML = rows.map((o) => {
+        const st = STATUS_MAP[o.status] || STATUS_MAP.new;
+        return `
+          <tr class="hover:bg-white/[0.02]">
+            <td class="p-3.5 whitespace-nowrap text-ashMuted">${o.isoDate} <span class="text-[11px] block">${o.createdAt}</span></td>
+            <td class="p-3.5 font-black text-chalk">#${o.id}</td>
+            <td class="p-3.5"><span class="font-bold text-chalk block">${o.customerName}</span><span dir="ltr" class="text-[11px] text-emerald-400">${o.customerPhone}</span></td>
+            <td class="p-3.5"><span class="text-chalk block">${o.branchName}</span><span class="text-[11px] text-ashMuted">${o.regionName}</span></td>
+            <td class="p-3.5 text-parchment font-bold">${o.payment}</td>
+            <td class="p-3.5 font-black text-chalk">${o.total} ر.س</td>
+            <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full border text-[11px] font-extrabold ${st.cls}">${st.label}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderDashboard() {
+      const liveBtn = document.getElementById('tabLiveBtn');
+      const arcBtn = document.getElementById('tabArchiveBtn');
+      document.getElementById('livePanel').classList.toggle('hidden', activeTab !== 'live');
+      document.getElementById('archivePanel').classList.toggle('hidden', activeTab !== 'archive');
+
+      liveBtn.className = `px-4 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'live' ? 'bg-chalk text-charcoal' : 'bg-slateLight text-ashMuted hover:text-chalk'}`;
+      arcBtn.className = `px-4 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer ${activeTab === 'archive' ? 'bg-chalk text-charcoal' : 'bg-slateLight text-ashMuted hover:text-chalk'}`;
+
+      const regionOrders = liveRegion === 'all' ? orders : orders.filter((o) => o.regionId === liveRegion);
+      document.getElementById('kpiNew').textContent = regionOrders.filter((o) => o.status === 'new').length;
+      document.getElementById('kpiPrep').textContent = regionOrders.filter((o) => o.status === 'preparing').length;
+      document.getElementById('kpiDone').textContent = regionOrders.filter((o) => o.status === 'completed').length;
+      document.getElementById('kpiSales').textContent = `${regionOrders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total, 0)} ر.س`;
+
+      const tabs = [
+        { id: 'all', label: `الكل (${regionOrders.length})` },
+        { id: 'new', label: `جديد (${regionOrders.filter((o) => o.status === 'new').length})` },
+        { id: 'preparing', label: `قيد التحضير (${regionOrders.filter((o) => o.status === 'preparing').length})` },
+        { id: 'ready', label: `جاهز (${regionOrders.filter((o) => o.status === 'ready').length})` },
+        { id: 'completed', label: `مكتمل (${regionOrders.filter((o) => o.status === 'completed').length})` },
+      ];
+      document.getElementById('liveStatusFilters').innerHTML = tabs.map((t) => `
+        <button type="button" data-status-tab="${t.id}" class="px-3.5 py-2 rounded-xl text-xs font-extrabold cursor-pointer ${liveStatus === t.id ? 'bg-chalk text-charcoal' : 'bg-slateWood border border-white/15 text-ashMuted hover:text-chalk'}">${t.label}</button>
+      `).join('');
+
+      const list = liveStatus === 'all' ? regionOrders : regionOrders.filter((o) => o.status === liveStatus);
+      const grid = document.getElementById('liveOrdersGrid');
+      const empty = document.getElementById('liveEmptyState');
+
+      if (list.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+      } else {
+        empty.classList.add('hidden');
+        grid.innerHTML = list.map((o) => {
+          const st = STATUS_MAP[o.status] || STATUS_MAP.new;
+          let nextBtn = '';
+          if (o.status === 'new') nextBtn = `<button type="button" data-next="preparing" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-sky-400 text-charcoal font-black text-xs cursor-pointer">قبول وبدء التحضير</button>`;
+          else if (o.status === 'preparing') nextBtn = `<button type="button" data-next="ready" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-violet-300 text-charcoal font-black text-xs cursor-pointer">جاهز للاستلام / التوصيل</button>`;
+          else if (o.status === 'ready') nextBtn = `<button type="button" data-next="completed" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-emerald-400 text-charcoal font-black text-xs cursor-pointer">إنهاء وتسليم الطلب</button>`;
+
+          const mapLink = o.coords ? `<a href="https://www.google.com/maps?q=${o.coords.lat},${o.coords.lng}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-parchment hover:underline text-[11px] font-bold">فتح موقع العميل على الخريطة</a>` : '';
+
+          return `
+            <article class="card-panel rounded-2xl p-5 flex flex-col justify-between gap-4">
+              <div class="space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <span class="text-base font-black text-chalk">#${o.id}</span>
+                    <span class="text-xs text-ashMuted ms-2">${o.isoDate} • ${o.createdAt}</span>
+                    <p class="text-xs font-bold text-parchment mt-0.5">${o.branchName}</p>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full border text-[11px] font-extrabold ${st.cls}">${st.label}</span>
+                </div>
+                <div class="rounded-xl bg-charcoal border border-white/10 p-3 text-xs space-y-1">
+                  <div class="flex justify-between">
+                    <span class="font-extrabold text-chalk">${o.customerName}</span>
+                    <a href="tel:${o.customerPhone}" dir="ltr" class="text-emerald-400 font-bold">${o.customerPhone}</a>
+                  </div>
+                  <p class="text-ashMuted">${o.address} • ${o.payment}</p>
+                  ${mapLink}
+                  ${o.notes ? `<p class="text-parchment font-bold">ملاحظة: ${o.notes}</p>` : ''}
+                </div>
+                <div class="space-y-1.5">
+                  ${o.items.map((it) => `
+                    <div class="text-xs border-b border-white/5 pb-1.5 last:border-0">
+                      <div class="flex justify-between font-bold text-chalk"><span>${it.qty} × ${it.name}</span><span class="text-parchment">${it.unitPrice * it.qty} ر.س</span></div>
+                      <p class="text-[11px] text-ashMuted">${it.sizeLabel} | ${it.crustLabel} | ${it.cutLabel}${it.extraLabels.length ? ' | ' + it.extraLabels.join('، ') : ''}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="pt-3 border-t border-white/10 space-y-2.5">
+                <div class="flex justify-between text-sm font-black"><span class="text-ashMuted">الإجمالي</span><span class="text-parchment">${o.total} ر.س</span></div>
+                <div class="flex gap-2">
+                  ${nextBtn}
+                  ${o.status !== 'completed' && o.status !== 'cancelled' ? `<button type="button" data-next="cancelled" data-oid="${o.id}" class="px-3 py-2.5 rounded-xl bg-rose-500/15 border border-rose-500/35 text-rose-300 text-xs font-bold cursor-pointer">إلغاء</button>` : ''}
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      renderArchiveTable();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest('[data-status-tab]');
+      if (tab) { liveStatus = tab.getAttribute('data-status-tab'); renderDashboard(); return; }
+      const next = e.target.closest('[data-next]');
+      if (next) {
+        const oid = next.getAttribute('data-oid');
+        const st = next.getAttribute('data-next');
+        const ord = orders.find((o) => o.id === oid);
+        if (ord) { ord.status = st; saveAndSync(); renderDashboard(); }
+      }
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const rows = getFilteredArchive();
+      const header = ['التاريخ', 'الوقت', 'رقم الطلب', 'العميل', 'الجوال', 'المنطقة', 'الفرع', 'طريقة الدفع', 'الإجمالي', 'الحالة'];
+      const csv = '\uFEFF' + [header.join(','), ...rows.map((o) => [o.isoDate, o.createdAt, o.id, `"${o.customerName}"`, o.customerPhone, `"${o.regionName}"`, `"${o.branchName}"`, `"${o.payment}"`, o.total, o.status].join(','))].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `pizza-today-orders-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    });
+
+    document.getElementById('exportJsonBtn').addEventListener('click', () => {
+      const rows = getFilteredArchive();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' }));
+      a.download = `pizza-today-db-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
