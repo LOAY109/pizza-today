@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>لوحة الكاشير وقاعدة الطلبات | بيتزا اليوم — ألفا فورال</title>
+  <title>بوابة الكاشير | بيتزا اليوم</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -34,8 +34,27 @@
       background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px);
     }
     .card-panel {
-      background: linear-gradient(180deg, rgba(29,29,29,0.9) 0%, rgba(18,18,18,0.98) 100%);
+      background: linear-gradient(180deg, rgba(29,29,29,0.92) 0%, rgba(18,18,18,0.98) 100%);
       border: 1px solid rgba(250,249,246,0.1);
+    }
+    .order-card-click {
+      transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+    }
+    .order-card-click:hover {
+      transform: translateY(-2px);
+      border-color: rgba(216,195,165,0.45);
+      box-shadow: 0 14px 32px -16px rgba(0,0,0,0.9);
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #orderDetailPrintArea, #orderDetailPrintArea * { visibility: visible; }
+      #orderDetailPrintArea {
+        position: fixed;
+        inset: 0;
+        background: #fff !important;
+        color: #000 !important;
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -48,46 +67,44 @@
       <div class="space-y-1.5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-parchment/15 border border-parchment/30 text-parchment text-xs font-extrabold">
           <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-          <span>صفحة الكاشير الخاصة</span>
+          <span>دخول الموظفين فقط</span>
         </span>
-        <h1 class="text-2xl font-black text-chalk pt-1">بوابة موظفي بيتزا اليوم</h1>
-        <p class="text-xs text-ashMuted">أدخل كلمة المرور للدخول إلى استقبال الطلبات وقاعدة البيانات السنوية.</p>
+        <h1 class="text-2xl font-black text-chalk pt-1">بوابة الكاشير — بيتزا اليوم</h1>
+        <p class="text-xs text-ashMuted">أدخل كلمة المرور للوصول إلى الطلبات والسجل السنوي.</p>
       </div>
 
       <form id="loginForm" class="space-y-4 text-start">
         <div>
           <label for="passInput" class="block text-xs font-bold text-ashMuted mb-1.5">كلمة المرور</label>
-          <input id="passInput" type="password" required placeholder="أدخل كلمة المرور..." class="w-full px-4 py-3.5 rounded-xl bg-charcoal border border-white/15 text-center text-base font-bold text-chalk focus:outline-none focus:border-chalk" />
+          <input id="passInput" type="password" required placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl bg-charcoal border border-white/15 text-center text-base font-bold text-chalk focus:outline-none focus:border-chalk" />
           <p id="passError" class="hidden text-xs text-rose-400 font-bold text-center mt-2">كلمة المرور غير صحيحة</p>
         </div>
         <button type="submit" class="w-full py-3.5 rounded-xl bg-chalk hover:bg-neutral-200 text-charcoal font-black text-sm cursor-pointer transition-colors">
-          دخول لوحة الكاشير
+          دخول
         </button>
       </form>
-
-      <p class="text-[11px] text-ashMuted/70 pt-2">نظام الكاشير السحابي — <strong class="text-parchment">ألفا فورال | Alpha For All</strong></p>
     </div>
   </main>
 
   <!-- Unlocked Cashier Dashboard + Annual Orders Database -->
   <div id="dashboardApp" class="hidden min-h-screen flex flex-col">
-    <header class="sticky top-0 z-30 bg-charcoal/90 backdrop-blur-md border-b border-white/10">
+    <header class="sticky top-0 z-30 bg-charcoal/92 backdrop-blur-md border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <img src="assets/logo.webp" alt="بيتزا اليوم" class="h-10 w-auto object-contain" />
           <div>
-            <span class="block text-sm sm:text-base font-black text-chalk">لوحة الكاشير وقاعدة البيانات</span>
+            <span class="block text-sm sm:text-base font-black text-chalk">لوحة الكاشير</span>
             <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              متصل لحظياً بطلبات الموقع
+              استقبال مباشر
             </span>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
           <button id="tabLiveBtn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black cursor-pointer transition-colors">الطلبات المباشرة</button>
-          <button id="tabArchiveBtn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors">سجل الطلبات السنوي (DB)</button>
-          <button id="lockNowBtn" type="button" aria-label="قفل اللوحة" class="p-2.5 rounded-xl bg-slateLight border border-white/15 text-ashMuted hover:text-chalk cursor-pointer">
+          <button id="tabArchiveBtn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors">السجل السنوي</button>
+          <button id="lockNowBtn" type="button" aria-label="قفل اللوحة" title="قفل اللوحة" class="p-2.5 rounded-xl bg-slateLight border border-white/15 text-ashMuted hover:text-chalk cursor-pointer">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
         </div>
@@ -99,19 +116,19 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div class="card-panel rounded-2xl p-4">
           <p class="text-xs text-ashMuted font-bold">طلبات جديدة</p>
-          <p id="kpiNew" class="text-3xl font-black text-amber-400 mt-1">0</p>
+          <p id="kpiNew" class="text-3xl font-black text-amber-400 mt-1 tabular-nums">0</p>
         </div>
         <div class="card-panel rounded-2xl p-4">
           <p class="text-xs text-ashMuted font-bold">قيد التحضير</p>
-          <p id="kpiPrep" class="text-3xl font-black text-sky-400 mt-1">0</p>
+          <p id="kpiPrep" class="text-3xl font-black text-sky-400 mt-1 tabular-nums">0</p>
         </div>
         <div class="card-panel rounded-2xl p-4">
           <p class="text-xs text-ashMuted font-bold">مكتملة</p>
-          <p id="kpiDone" class="text-3xl font-black text-emerald-400 mt-1">0</p>
+          <p id="kpiDone" class="text-3xl font-black text-emerald-400 mt-1 tabular-nums">0</p>
         </div>
         <div class="card-panel rounded-2xl p-4">
           <p class="text-xs text-ashMuted font-bold">إجمالي المبيعات</p>
-          <p id="kpiSales" class="text-3xl font-black text-parchment mt-1">0 ر.س</p>
+          <p id="kpiSales" class="text-3xl font-black text-parchment mt-1 tabular-nums">0 ر.س</p>
         </div>
       </div>
 
@@ -128,11 +145,13 @@
           </select>
         </div>
 
-        <div id="liveOrdersGrid" class="grid md:grid-cols-2 gap-4"></div>
-        <div id="liveEmptyState" class="hidden text-center py-14 rounded-3xl bg-slateWood border border-white/10 space-y-2">
+        <p class="text-xs text-ashMuted">اضغط على أي طلب لعرض تفاصيله الكاملة بسرعة وتحديث حالته أو طباعته.</p>
+
+        <div id="liveOrdersGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="liveEmptyState" class="hidden text-center py-16 rounded-3xl bg-slateWood border border-white/10 space-y-2">
           <i data-lucide="inbox" class="w-10 h-10 text-ashMuted mx-auto"></i>
-          <p class="text-chalk font-extrabold">لا توجد طلبات حالياً في هذا التصنيف</p>
-          <p class="text-xs text-ashMuted">أي طلب يرسله العميل من الموقع سيظهر هنا فوراً مع تنبيه صوتي.</p>
+          <p class="text-chalk font-extrabold">لا توجد طلبات حالياً</p>
+          <p class="text-xs text-ashMuted">أي طلب جديد من الموقع سيظهر هنا مباشرة.</p>
         </div>
       </section>
 
@@ -141,17 +160,17 @@
         <div class="card-panel rounded-2xl p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 class="text-lg font-black text-chalk">قاعدة بيانات وسجل الطلبات السنوي</h2>
-              <p class="text-xs text-ashMuted">فلتر حسب السنة، الشهر، أو تاريخ يوم محدد، وصدّر السجل بضغطة زر.</p>
+              <h2 class="text-lg font-black text-chalk">سجل الطلبات السنوي</h2>
+              <p class="text-xs text-ashMuted">اضغط على أي صف لعرض تفاصيل الطلب الكاملة، أو صدّر السجل.</p>
             </div>
             <div class="flex items-center gap-2">
               <button id="exportCsvBtn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-chalk text-charcoal text-xs font-black cursor-pointer">
                 <i data-lucide="download" class="w-4 h-4"></i>
-                <span>تصدير CSV (Excel)</span>
+                <span>تصدير CSV</span>
               </button>
               <button id="exportJsonBtn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slateLight border border-white/15 text-chalk text-xs font-bold cursor-pointer">
                 <i data-lucide="database" class="w-4 h-4 text-parchment"></i>
-                <span>نسخة JSON</span>
+                <span>JSON</span>
               </button>
             </div>
           </div>
@@ -163,7 +182,7 @@
               <option value="2025">2025</option>
             </select>
             <select id="dbMonthFilter" class="px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs font-bold text-chalk">
-              <option value="all">جميع الأشهر (طوال السنة)</option>
+              <option value="all">جميع الأشهر</option>
               <option value="1">يناير (01)</option><option value="2">فبراير (02)</option><option value="3">مارس (03)</option>
               <option value="4">أبريل (04)</option><option value="5">مايو (05)</option><option value="6">يونيو (06)</option>
               <option value="7">يوليو (07)</option><option value="8">أغسطس (08)</option><option value="9">سبتمبر (09)</option>
@@ -183,7 +202,7 @@
                   <th class="p-3.5 text-start font-extrabold">التاريخ والوقت</th>
                   <th class="p-3.5 text-start font-extrabold">رقم الطلب</th>
                   <th class="p-3.5 text-start font-extrabold">العميل والجوال</th>
-                  <th class="p-3.5 text-start font-extrabold">المنطقة والفرع</th>
+                  <th class="p-3.5 text-start font-extrabold">الفرع</th>
                   <th class="p-3.5 text-start font-extrabold">الدفع</th>
                   <th class="p-3.5 text-start font-extrabold">الإجمالي</th>
                   <th class="p-3.5 text-start font-extrabold">الحالة</th>
@@ -195,21 +214,46 @@
           <div id="archiveEmpty" class="hidden p-10 text-center text-ashMuted text-sm">لا توجد طلبات مطابقة للتاريخ أو الفلتر المحدد.</div>
         </div>
 
-        <!-- Resend OTP Webhook Config -->
+        <!-- Email OTP Server Endpoint -->
         <div class="card-panel rounded-2xl p-5 space-y-3">
-          <h3 class="text-sm font-black text-chalk">إعدادات ربط Resend OTP (اختياري)</h3>
-          <p class="text-xs text-ashMuted">أدخل رابط خادم Resend (مثل Cloudflare Worker) لإرسال رموز التحقق تلقائياً لبريد العملاء دون كشف المفتاح.</p>
+          <h3 class="text-sm font-black text-chalk">رابط خادم إرسال رمز التحقق (Resend)</h3>
           <div class="flex flex-wrap gap-2">
-            <input id="resendWebhookInput" type="url" dir="ltr" placeholder="https://your-worker.workers.dev/send-otp" class="flex-1 min-w-[240px] px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs text-chalk" />
-            <button id="saveWebhookBtn" type="button" class="px-4 py-2.5 rounded-xl bg-parchment text-charcoal text-xs font-black cursor-pointer">حفظ الرابط</button>
+            <input id="resendWebhookInput" type="url" dir="ltr" placeholder="https://pizza-today-otp.your-name.workers.dev/send-otp" class="flex-1 min-w-[240px] px-3.5 py-2.5 rounded-xl bg-charcoal border border-white/15 text-xs text-chalk" />
+            <button id="saveWebhookBtn" type="button" class="px-4 py-2.5 rounded-xl bg-parchment text-charcoal text-xs font-black cursor-pointer">حفظ</button>
           </div>
+          <p id="webhookSavedMsg" class="hidden text-xs text-emerald-400 font-bold">تم حفظ الرابط بنجاح.</p>
         </div>
       </section>
     </main>
 
-    <footer class="border-t border-white/10 py-6 text-center text-xs text-ashMuted">
-      نظام الكاشير وقاعدة البيانات السنوية — <strong class="text-parchment">ألفا فورال | Alpha For All</strong>
+    <footer class="border-t border-white/10 py-5 text-center text-xs text-ashMuted">
+      بيتزا اليوم — لوحة الكاشير الداخلية
     </footer>
+  </div>
+
+  <!-- FAST ORDER DETAILS POPUP MODAL -->
+  <div id="orderDetailModal" class="hidden fixed inset-0 z-50 bg-black/82 backdrop-blur-sm p-3 sm:p-5 flex items-center justify-center">
+    <div class="w-full max-w-2xl max-h-[92vh] bg-slateWood rounded-3xl border border-white/15 flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3 bg-charcoal/80">
+        <div class="flex items-center gap-3">
+          <h3 id="modalOrderId" class="text-xl font-black text-chalk">#PT-0000</h3>
+          <span id="modalOrderBadge" class="px-3 py-1 rounded-full border text-xs font-extrabold"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="printOrderBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slateLight hover:bg-white/15 border border-white/15 text-xs font-bold text-chalk cursor-pointer">
+            <i data-lucide="printer" class="w-4 h-4 text-parchment"></i>
+            <span>طباعة</span>
+          </button>
+          <button id="closeOrderModalBtn" type="button" aria-label="إغلاق" class="w-9 h-9 rounded-xl bg-slateLight hover:bg-white/15 flex items-center justify-center text-chalk cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="orderDetailPrintArea" class="flex-1 overflow-y-auto p-5 space-y-5"></div>
+
+      <div id="modalOrderActions" class="p-4 sm:p-5 border-t border-white/10 bg-charcoal/95 flex flex-wrap items-center gap-2.5"></div>
+    </div>
   </div>
 
   <script>
@@ -232,6 +276,7 @@
     let activeTab = 'live';
     let liveStatus = 'all';
     let liveRegion = 'all';
+    let openModalOrderId = null;
 
     let syncChannel = null;
     try {
@@ -240,6 +285,7 @@
         if (ev.data && ev.data.type === 'ORDERS_UPDATED') {
           orders = safeRead(STORAGE_KEYS.orders, orders);
           renderDashboard();
+          if (openModalOrderId) renderOrderDetailModal(openModalOrderId);
         }
       };
     } catch (e) {}
@@ -248,6 +294,7 @@
       if (ev.key === STORAGE_KEYS.orders) {
         orders = safeRead(STORAGE_KEYS.orders, []);
         renderDashboard();
+        if (openModalOrderId) renderOrderDetailModal(openModalOrderId);
       }
     });
 
@@ -287,7 +334,119 @@
 
     document.getElementById('saveWebhookBtn').addEventListener('click', () => {
       safeWrite(STORAGE_KEYS.resendWebhook, document.getElementById('resendWebhookInput').value.trim());
+      const msg = document.getElementById('webhookSavedMsg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 2400);
     });
+
+    function openOrderDetailModal(orderId) {
+      openModalOrderId = orderId;
+      renderOrderDetailModal(orderId);
+      document.getElementById('orderDetailModal').classList.remove('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeOrderDetailModal() {
+      openModalOrderId = null;
+      document.getElementById('orderDetailModal').classList.add('hidden');
+    }
+
+    function renderOrderDetailModal(orderId) {
+      const o = orders.find((x) => x.id === orderId);
+      if (!o) { closeOrderDetailModal(); return; }
+      const st = STATUS_MAP[o.status] || STATUS_MAP.new;
+
+      document.getElementById('modalOrderId').textContent = `#${o.id}`;
+      const badge = document.getElementById('modalOrderBadge');
+      badge.textContent = st.label;
+      badge.className = `px-3 py-1 rounded-full border text-xs font-extrabold ${st.cls}`;
+
+      const mapBtn = o.coords
+        ? `<a href="https://www.google.com/maps?q=${o.coords.lat},${o.coords.lng}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-parchment text-charcoal text-xs font-black mt-2">
+            <i data-lucide="map-pin" class="w-4 h-4"></i>
+            <span>فتح موقع التوصيل في خرائط قوقل</span>
+           </a>`
+        : '';
+
+      document.getElementById('orderDetailPrintArea').innerHTML = `
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-1.5">
+            <p class="text-[11px] font-bold text-ashMuted">بيانات العميل</p>
+            <p class="text-base font-black text-chalk">${o.customerName}</p>
+            <a href="tel:${o.customerPhone}" dir="ltr" class="inline-flex items-center gap-1.5 text-sm font-extrabold text-emerald-400 hover:underline">${o.customerPhone}</a>
+            ${o.customerEmail ? `<p dir="ltr" class="text-xs text-ashMuted text-end">${o.customerEmail}</p>` : ''}
+          </div>
+          <div class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-1.5">
+            <p class="text-[11px] font-bold text-ashMuted">الفرع والاستلام</p>
+            <p class="text-sm font-black text-parchment">${o.branchName}</p>
+            <p class="text-xs text-ashMuted">${o.regionName} • ${o.isoDate} (${o.createdAt})</p>
+            <p class="text-xs font-bold text-chalk pt-1">${o.fulfillment === 'delivery' ? 'توصيل: ' + o.address : 'استلام من الفرع'}</p>
+            ${mapBtn}
+          </div>
+        </div>
+
+        ${o.notes ? `
+          <div class="rounded-2xl bg-amber-400/10 border border-amber-400/30 p-3.5 text-xs sm:text-sm font-bold text-amber-200">
+            ملاحظة العميل: ${o.notes}
+          </div>
+        ` : ''}
+
+        <div class="rounded-2xl bg-charcoal border border-white/10 overflow-hidden">
+          <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between text-xs font-extrabold text-ashMuted">
+            <span>تفاصيل الأصناف (${o.items.reduce((s, i) => s + i.qty, 0)} قطعة)</span>
+            <span>الدفع: <strong class="text-parchment">${o.payment}</strong></span>
+          </div>
+          <div class="divide-y divide-white/10">
+            ${o.items.map((it) => `
+              <div class="p-4 space-y-1.5">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-lg bg-chalk text-charcoal font-black text-sm flex items-center justify-center shrink-0">${it.qty}×</span>
+                    <span class="text-base font-black text-chalk">${it.name}</span>
+                  </div>
+                  <span class="text-base font-black text-parchment shrink-0">${it.unitPrice * it.qty} ر.س</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5 ps-9">
+                  <span class="px-2.5 py-0.5 rounded-lg bg-slateLight text-xs font-bold text-chalk">${it.sizeLabel}</span>
+                  <span class="px-2.5 py-0.5 rounded-lg bg-slateLight text-xs font-bold text-chalk">${it.crustLabel}</span>
+                  <span class="px-2.5 py-0.5 rounded-lg bg-slateLight text-xs font-bold text-chalk">${it.cutLabel}</span>
+                  ${it.extraLabels && it.extraLabels.length ? it.extraLabels.map((ex) => `<span class="px-2.5 py-0.5 rounded-lg bg-parchment/20 text-xs font-bold text-parchment">+ ${ex}</span>`).join('') : ''}
+                </div>
+                ${it.note ? `<p class="ps-9 text-xs font-bold text-amber-300">ملاحظة الصنف: ${it.note}</p>` : ''}
+              </div>
+            `).join('')}
+          </div>
+          <div class="px-4 py-3.5 bg-slateWood border-t border-white/10 flex items-center justify-between">
+            <span class="text-sm font-extrabold text-ashMuted">الإجمالي النهائي</span>
+            <span class="text-2xl font-black text-parchment">${o.total} ر.س</span>
+          </div>
+        </div>
+      `;
+
+      const actionsEl = document.getElementById('modalOrderActions');
+      const buttons = [];
+      if (o.status === 'new') {
+        buttons.push(`<button type="button" data-next="preparing" data-oid="${o.id}" class="flex-1 py-3 px-4 rounded-xl bg-sky-400 hover:bg-sky-300 text-charcoal font-black text-sm cursor-pointer">قبول وبدء التحضير</button>`);
+      } else if (o.status === 'preparing') {
+        buttons.push(`<button type="button" data-next="ready" data-oid="${o.id}" class="flex-1 py-3 px-4 rounded-xl bg-violet-300 hover:bg-violet-200 text-charcoal font-black text-sm cursor-pointer">جاهز للاستلام / التوصيل</button>`);
+      } else if (o.status === 'ready') {
+        buttons.push(`<button type="button" data-next="completed" data-oid="${o.id}" class="flex-1 py-3 px-4 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-charcoal font-black text-sm cursor-pointer">إنهاء وتسليم الطلب</button>`);
+      }
+      if (o.status !== 'completed' && o.status !== 'cancelled') {
+        buttons.push(`<button type="button" data-next="cancelled" data-oid="${o.id}" class="px-4 py-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/35 text-rose-300 text-xs font-extrabold cursor-pointer">إلغاء الطلب</button>`);
+      }
+      if (buttons.length === 0) {
+        buttons.push(`<span class="text-xs text-ashMuted font-bold">تم إغلاق هذا الطلب (${st.label}).</span>`);
+      }
+      actionsEl.innerHTML = buttons.join('');
+    }
+
+    document.getElementById('closeOrderModalBtn').addEventListener('click', closeOrderDetailModal);
+    document.getElementById('orderDetailModal').addEventListener('click', (e) => {
+      if (e.target.id === 'orderDetailModal') closeOrderDetailModal();
+    });
+    document.getElementById('printOrderBtn').addEventListener('click', () => window.print());
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOrderDetailModal(); });
 
     function getFilteredArchive() {
       const y = document.getElementById('dbYearFilter').value;
@@ -319,7 +478,7 @@
       tbody.innerHTML = rows.map((o) => {
         const st = STATUS_MAP[o.status] || STATUS_MAP.new;
         return `
-          <tr class="hover:bg-white/[0.02]">
+          <tr data-open-detail="${o.id}" class="hover:bg-white/[0.05] cursor-pointer transition-colors">
             <td class="p-3.5 whitespace-nowrap text-ashMuted">${o.isoDate} <span class="text-[11px] block">${o.createdAt}</span></td>
             <td class="p-3.5 font-black text-chalk">#${o.id}</td>
             <td class="p-3.5"><span class="font-bold text-chalk block">${o.customerName}</span><span dir="ltr" class="text-[11px] text-emerald-400">${o.customerPhone}</span></td>
@@ -369,48 +528,29 @@
         empty.classList.add('hidden');
         grid.innerHTML = list.map((o) => {
           const st = STATUS_MAP[o.status] || STATUS_MAP.new;
-          let nextBtn = '';
-          if (o.status === 'new') nextBtn = `<button type="button" data-next="preparing" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-sky-400 text-charcoal font-black text-xs cursor-pointer">قبول وبدء التحضير</button>`;
-          else if (o.status === 'preparing') nextBtn = `<button type="button" data-next="ready" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-violet-300 text-charcoal font-black text-xs cursor-pointer">جاهز للاستلام / التوصيل</button>`;
-          else if (o.status === 'ready') nextBtn = `<button type="button" data-next="completed" data-oid="${o.id}" class="flex-1 py-2.5 rounded-xl bg-emerald-400 text-charcoal font-black text-xs cursor-pointer">إنهاء وتسليم الطلب</button>`;
-
-          const mapLink = o.coords ? `<a href="https://www.google.com/maps?q=${o.coords.lat},${o.coords.lng}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-parchment hover:underline text-[11px] font-bold">فتح موقع العميل على الخريطة</a>` : '';
-
+          const totalItems = o.items.reduce((s, i) => s + i.qty, 0);
           return `
-            <article class="card-panel rounded-2xl p-5 flex flex-col justify-between gap-4">
-              <div class="space-y-3">
+            <article data-open-detail="${o.id}" class="card-panel order-card-click rounded-2xl p-4 flex flex-col justify-between gap-3 cursor-pointer">
+              <div class="space-y-2.5">
                 <div class="flex items-start justify-between gap-2">
                   <div>
-                    <span class="text-base font-black text-chalk">#${o.id}</span>
-                    <span class="text-xs text-ashMuted ms-2">${o.isoDate} • ${o.createdAt}</span>
-                    <p class="text-xs font-bold text-parchment mt-0.5">${o.branchName}</p>
+                    <span class="text-lg font-black text-chalk">#${o.id}</span>
+                    <span class="text-[11px] text-ashMuted block">${o.isoDate} • ${o.createdAt}</span>
                   </div>
                   <span class="px-2.5 py-1 rounded-full border text-[11px] font-extrabold ${st.cls}">${st.label}</span>
                 </div>
-                <div class="rounded-xl bg-charcoal border border-white/10 p-3 text-xs space-y-1">
-                  <div class="flex justify-between">
-                    <span class="font-extrabold text-chalk">${o.customerName}</span>
-                    <a href="tel:${o.customerPhone}" dir="ltr" class="text-emerald-400 font-bold">${o.customerPhone}</a>
-                  </div>
-                  <p class="text-ashMuted">${o.address} • ${o.payment}</p>
-                  ${mapLink}
-                  ${o.notes ? `<p class="text-parchment font-bold">ملاحظة: ${o.notes}</p>` : ''}
-                </div>
-                <div class="space-y-1.5">
-                  ${o.items.map((it) => `
-                    <div class="text-xs border-b border-white/5 pb-1.5 last:border-0">
-                      <div class="flex justify-between font-bold text-chalk"><span>${it.qty} × ${it.name}</span><span class="text-parchment">${it.unitPrice * it.qty} ر.س</span></div>
-                      <p class="text-[11px] text-ashMuted">${it.sizeLabel} | ${it.crustLabel} | ${it.cutLabel}${it.extraLabels.length ? ' | ' + it.extraLabels.join('، ') : ''}</p>
-                    </div>
-                  `).join('')}
+                <div class="text-xs space-y-1">
+                  <p class="font-extrabold text-chalk">${o.customerName} <span dir="ltr" class="text-emerald-400 ms-1">${o.customerPhone}</span></p>
+                  <p class="text-parchment font-bold truncate">${o.branchName}</p>
+                  <p class="text-ashMuted truncate">${o.fulfillment === 'delivery' ? 'توصيل' : 'استلام من الفرع'} • ${o.payment} • ${totalItems} أصناف</p>
                 </div>
               </div>
-              <div class="pt-3 border-t border-white/10 space-y-2.5">
-                <div class="flex justify-between text-sm font-black"><span class="text-ashMuted">الإجمالي</span><span class="text-parchment">${o.total} ر.س</span></div>
-                <div class="flex gap-2">
-                  ${nextBtn}
-                  ${o.status !== 'completed' && o.status !== 'cancelled' ? `<button type="button" data-next="cancelled" data-oid="${o.id}" class="px-3 py-2.5 rounded-xl bg-rose-500/15 border border-rose-500/35 text-rose-300 text-xs font-bold cursor-pointer">إلغاء</button>` : ''}
-                </div>
+              <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                <span class="text-base font-black text-parchment">${o.total} ر.س</span>
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold text-chalk">
+                  <span>عرض التفاصيل</span>
+                  <i data-lucide="chevron-left" class="w-4 h-4 text-parchment"></i>
+                </span>
               </div>
             </article>
           `;
@@ -424,12 +564,25 @@
     document.addEventListener('click', (e) => {
       const tab = e.target.closest('[data-status-tab]');
       if (tab) { liveStatus = tab.getAttribute('data-status-tab'); renderDashboard(); return; }
+
       const next = e.target.closest('[data-next]');
       if (next) {
+        e.stopPropagation();
         const oid = next.getAttribute('data-oid');
         const st = next.getAttribute('data-next');
         const ord = orders.find((o) => o.id === oid);
-        if (ord) { ord.status = st; saveAndSync(); renderDashboard(); }
+        if (ord) {
+          ord.status = st;
+          saveAndSync();
+          renderDashboard();
+          if (openModalOrderId === oid) renderOrderDetailModal(oid);
+        }
+        return;
+      }
+
+      const detailTrigger = e.target.closest('[data-open-detail]');
+      if (detailTrigger) {
+        openOrderDetailModal(detailTrigger.getAttribute('data-open-detail'));
       }
     });
 
