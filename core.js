@@ -627,7 +627,7 @@ function renderVipModal() {
         <li><strong class="text-chalk">2 نقطة لكل 1 ريال</strong> + مكافأة إضافية للطلبات الكبيرة (+20 فوق 50 ر.س، +50 فوق 100 ر.س، +100 فوق 150 ر.س).</li>
         <li><strong class="text-chalk">التوصيل الإلكتروني:</strong> تُضاف نقاطك تلقائياً فور تسليم الطلب من الفرع.</li>
         <li><strong class="text-chalk">الاستلام من الفرع:</strong> يمسح الكاشير باركودك أعلاه وتُضاف نقاطك فوراً.</li>
-        <li><strong class="text-chalk">الاستبدال:</strong> كل <strong class="text-parchment">100 نقطة = 1 ريال</strong> خصم مباشر داخل السلة.</li>
+        <li><strong class="text-chalk">جميع فروع المملكة:</strong> نقاطك موحّدة — تجمعها من أي فرع وتستخدمها في أي فرع بالسعودية.</li><li><strong class="text-chalk">الاستبدال:</strong> كل <strong class="text-parchment">100 نقطة = 1 ريال</strong> خصم مباشر داخل السلة.</li>
       </ul>
     </div>
     <div class="space-y-2.5">
@@ -638,4 +638,27 @@ function renderVipModal() {
   if (qrBox && window.QRCode) { qrBox.innerHTML = ''; try { new QRCode(qrBox, { text: sum.memberCode, width: 98, height: 98, colorDark: '#0A0A0A', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.M }); } catch (e) {} }
   const copyBtn = document.getElementById('copyMemberCodeBtn');
   if (copyBtn) copyBtn.onclick = () => { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(sum.memberCode); showToast('تم نسخ رقم العضوية'); };
+}
+
+function openQrFullscreen() {
+  renderQrFullscreen();
+  document.getElementById('qrFullscreenModal').classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function renderQrFullscreen() {
+  const body = document.getElementById('qrFullscreenBody');
+  if (!body || !window.PizzaLoyalty) return;
+  if (!state.user) {
+    body.innerHTML = `<div class="rounded-3xl bg-slateWood border border-white/15 p-7 text-center space-y-4 shadow-2xl"><span class="w-16 h-16 mx-auto rounded-2xl bg-parchment/15 border border-parchment/35 text-parchment flex items-center justify-center"><i data-lucide="qr-code" class="w-8 h-8"></i></span><div class="space-y-1.5"><h3 class="text-xl font-black text-chalk">رمز QR الخاص بك</h3><p class="text-xs text-ashMuted leading-relaxed">سجّل دخولك أولاً لعرض رمز الـ QR الخاص بك واستخدام نقاطك في جميع فروع بيتزا اليوم بالمملكة.</p></div><button id="qrPromptLoginBtn" type="button" class="w-full py-3.5 rounded-xl bg-chalk hover:bg-chalkHover text-charcoal font-black text-sm cursor-pointer">تسجيل الدخول</button></div>`;
+    const btn = document.getElementById('qrPromptLoginBtn');
+    if (btn) btn.onclick = () => { document.getElementById('qrFullscreenModal').classList.add('hidden'); openAuthModal(); };
+    return;
+  }
+  const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+  body.innerHTML = `<div class="rounded-3xl bg-slateWood border border-parchment/35 p-6 text-center space-y-5 shadow-2xl"><div class="space-y-1"><span class="inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-extrabold ${sum.tier.color}">${sum.tier.name}</span><h3 class="text-xl font-black text-chalk pt-1">${state.user.name}</h3><p class="text-xs font-bold text-amber-300 tabular-nums">${sum.balance} نقطة (= ${sum.sarValue} ر.س)</p></div><div class="rounded-3xl bg-white p-5 inline-flex flex-col items-center gap-3 mx-auto shadow-inner"><div id="qrFullCanvas" class="w-56 h-56 flex items-center justify-center bg-white"></div><button id="qrFullCopyBtn" type="button" dir="ltr" class="px-4 py-1.5 rounded-xl bg-neutral-900 text-white text-sm font-black tracking-widest cursor-pointer">${sum.memberCode}</button></div><div class="space-y-1"><p class="text-xs font-extrabold text-chalk">وجّه الشاشة للكاشير لمسح رمز QR</p><p class="text-[11px] text-parchment font-bold">نقاطك موحّدة وصالحة في جميع فروع بيتزا اليوم بالسعودية</p></div></div>`;
+  const box = document.getElementById('qrFullCanvas');
+  if (box && window.QRCode) { box.innerHTML = ''; try { new QRCode(box, { text: sum.memberCode, width: 216, height: 216, colorDark: '#0A0A0A', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.H }); } catch (e) {} }
+  const cBtn = document.getElementById('qrFullCopyBtn');
+  if (cBtn) cBtn.onclick = () => { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(sum.memberCode); showToast('تم نسخ رقم العضوية'); };
 }
