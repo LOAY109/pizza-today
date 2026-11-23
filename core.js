@@ -29,6 +29,7 @@ function safeRead(key, fallback) {
       activeOrderId: null,
       customizer: null,
       pendingCheckoutAfterAuth: false,
+      redeemPoints: 0,
     };
 
     // Sync with Cashier Page in real time via BroadcastChannel + storage
@@ -44,7 +45,7 @@ function safeRead(key, fallback) {
     } catch (e) {}
 
     window.addEventListener('storage', (ev) => {
-      if (ev.key === STORAGE_KEYS.orders) {
+      if (ev.key === STORAGE_KEYS.orders || (window.PizzaLoyalty && ev.key === PizzaLoyalty.LOYALTY_KEY)) {
         state.orders = safeRead(STORAGE_KEYS.orders, []);
         renderAll();
       }
@@ -385,7 +386,18 @@ function safeRead(key, fallback) {
         return;
       }
 
-      const { total } = getCartStats();
+      const { total: subtotal } = getCartStats();
+      let redeemPts = 0;
+      let pointsDiscountSar = 0;
+      if (window.PizzaLoyalty && state.user && state.redeemPoints >= 100) {
+        const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+        const maxPtsByTotal = Math.floor(subtotal) * 100;
+        const maxAllowed = Math.floor(Math.min(sum.balance, maxPtsByTotal) / 100) * 100;
+        redeemPts = Math.min(state.redeemPoints, maxAllowed);
+        pointsDiscountSar = Math.floor(redeemPts / 100);
+      }
+      const total = Math.max(0, subtotal - pointsDiscountSar);
+      const expectedPtsObj = window.PizzaLoyalty ? PizzaLoyalty.calculateOrderPoints(total) : { total: 0 };
       const payLabel = PAYMENT_METHODS.find((p) => p.id === state.paymentMethod)?.label || 'مدى';
       const notes = document.getElementById('cartNotesInput').value.trim();
       const now = new Date();
@@ -411,9 +423,36 @@ function safeRead(key, fallback) {
         payment: payLabel,
         notes,
         items: state.cart.map((l) => ({ ...l })),
+        subtotal,
+
+        pointsRedeemed: redeemPts,
+
+        pointsDiscountSar,
+
+        expectedPoints: expectedPtsObj.total,
+
+        pointsAwarded: false,
+
+        pointsAwardedAmount: 0,
+
+        memberCode: window.PizzaLoyalty ? PizzaLoyalty.makeMemberCode(state.user.phone) : '',
+
         total,
+
         status: 'new',
       };
+      if (redeemPts > 0 && window.PizzaLoyalty) {
+        const rtx = PizzaLoyalty.recordTransaction({
+          phone: state.user.phone,
+          customerName: state.user.name,
+          delta: -redeemPts,
+          type: 'redeem',
+          orderId: orderNum,
+          reason: `استبدال نقاط في طلب #${orderNum} (خصم ${pointsDiscountSar} ر.س)`,
+        });
+        if (!rtx.ok) { showToast(rtx.error || 'تعذر استبدال النقاط'); return; }
+      }
+      state.redeemPoints = 0;
 
       state.orders.unshift(newOrder);
       state.activeOrderId = newOrder.id;
@@ -553,3 +592,48 @@ function safeRead(key, fallback) {
     }
 
     // ==================== RENDER FUNCTIONS ====================
+
+
+function openVipModal() {
+  renderVipModal();
+  document.getElementById('vipModal').classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function renderVipModal() {
+  const body = document.getElementById('vipModalBody');
+  if (!body || !window.PizzaLoyalty) return;
+  if (!state.user) {
+    body.innerHTML = `<div class="rounded-2xl bg-charcoal border border-white/10 p-6 text-center space-y-4"><span class="w-14 h-14 mx-auto rounded-2xl bg-amber-400/15 border border-amber-400/35 text-amber-300 flex items-center justify-center"><i data-lucide="award" class="w-7 h-7"></i></span><div class="space-y-1.5"><h4 class="text-lg font-black text-chalk">فعّل بطاقة العميل المميز</h4><p class="text-xs text-ashMuted leading-relaxed">سجّل دخولك برقم جوالك لتحصل على باركود خاص بك وتبدأ بجمع النقاط مع كل طلب (كل 100 نقطة = 1 ريال).</p></div><button id="vipPromptLoginBtn" type="button" class="w-full py-3 rounded-xl bg-chalk hover:bg-chalkHover text-charcoal font-black text-sm cursor-pointer">تسجيل الدخول الآن</button></div>`;
+    const btn = document.getElementById('vipPromptLoginBtn');
+    if (btn) btn.onclick = () => { document.getElementById('vipModal').classList.add('hidden'); openAuthModal(); };
+    return;
+  }
+  const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+  const barcodeSvg = PizzaLoyalty.renderBarcodeSvg(sum.memberCode);
+  const pct = sum.tier.nextAt ? Math.min(100, Math.round((sum.lifetimeEarned / sum.tier.nextAt) * 100)) : 100;
+  body.innerHTML = `
+    <div class="rounded-3xl bg-gradient-to-br from-[#1D1B18] via-[#121212] to-[#0A0A0A] border border-parchment/35 p-5 space-y-4 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <div><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[11px] font-extrabold ${sum.tier.color}">${sum.tier.name}</span><h4 class="text-lg font-black text-chalk mt-1.5">${state.user.name}</h4><p dir="ltr" class="text-xs text-ashMuted text-end">${state.user.phone}</p></div>
+        <div class="text-end"><span class="block text-[11px] text-ashMuted font-bold">رصيدك الموثّق</span><span class="text-3xl font-black text-amber-300 tabular-nums">${sum.balance}</span><span class="block text-xs font-extrabold text-parchment">نقطة (= ${sum.sarValue} ر.س)</span></div>
+      </div>
+      ${sum.tier.nextAt ? `<div class="space-y-1"><div class="flex justify-between text-[11px] text-ashMuted"><span>التقدم للمستوى التالي</span><span class="tabular-nums">${sum.lifetimeEarned} / ${sum.tier.nextAt} نقطة</span></div><div class="h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-l from-amber-300 to-parchment" style="width:${pct}%"></div></div></div>` : `<p class="text-[11px] text-sky-300 font-bold">أنت في أعلى مستوى عضوية (ماسي VIP)</p>`}
+      <div class="rounded-2xl bg-white p-3.5 text-center space-y-2">${barcodeSvg}<div class="flex items-center justify-between px-1"><span class="text-[11px] font-extrabold text-neutral-700">أظهر الباركود للكاشير عند الاستلام</span><button id="copyMemberCodeBtn" type="button" dir="ltr" class="text-xs font-black text-neutral-900 bg-neutral-200 hover:bg-neutral-300 px-2.5 py-1 rounded-lg cursor-pointer">${sum.memberCode}</button></div></div>
+    </div>
+    <div class="rounded-2xl bg-charcoal border border-white/10 p-4 space-y-2 text-xs">
+      <h5 class="font-black text-chalk">كيف تجمع وتستبدل نقاطك؟</h5>
+      <ul class="space-y-1.5 text-ashMuted list-disc ps-4">
+        <li><strong class="text-chalk">2 نقطة لكل 1 ريال</strong> + مكافأة إضافية للطلبات الكبيرة (+20 فوق 50 ر.س، +50 فوق 100 ر.س، +100 فوق 150 ر.س).</li>
+        <li><strong class="text-chalk">التوصيل الإلكتروني:</strong> تُضاف نقاطك تلقائياً فور تسليم الطلب من الفرع.</li>
+        <li><strong class="text-chalk">الاستلام من الفرع:</strong> يمسح الكاشير باركودك أعلاه وتُضاف نقاطك فوراً.</li>
+        <li><strong class="text-chalk">الاستبدال:</strong> كل <strong class="text-parchment">100 نقطة = 1 ريال</strong> خصم مباشر داخل السلة.</li>
+      </ul>
+    </div>
+    <div class="space-y-2.5">
+      <div class="flex items-center justify-between"><h5 class="text-sm font-black text-chalk">سجل النقاط (${sum.history.length})</h5><span class="text-[11px] text-emerald-400 font-bold">سجل محمي وموثّق</span></div>
+      ${sum.history.length === 0 ? `<div class="rounded-2xl bg-charcoal border border-white/10 p-6 text-center text-xs text-ashMuted">لا توجد حركات نقاط بعد. اطلب الآن لتبدأ بجمع نقاطك.</div>` : `<div class="space-y-2">${sum.history.slice(0, 20).map((tx) => `<div class="rounded-xl bg-charcoal border border-white/10 p-3 flex items-center justify-between gap-2 text-xs"><div class="min-w-0"><p class="font-bold text-chalk truncate">${tx.reason}</p><p class="text-[11px] text-ashMuted">${tx.isoDate} • ${tx.timeStr}</p></div><span class="text-sm font-black shrink-0 tabular-nums ${tx.delta > 0 ? 'text-emerald-400' : 'text-rose-400'}">${tx.delta > 0 ? '+' + tx.delta : tx.delta} نقطة</span></div>`).join('')}</div>`}
+    </div>`;
+  const copyBtn = document.getElementById('copyMemberCodeBtn');
+  if (copyBtn) copyBtn.onclick = () => { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(sum.memberCode); showToast('تم نسخ رقم العضوية'); };
+}
