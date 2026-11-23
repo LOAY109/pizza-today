@@ -178,7 +178,7 @@
   </div>
 
   <script>
-    const STORAGE_KEYS = { orders: 'pt_ksa_orders_v2', resendWebhook: 'pt_ksa_resend_webhook_v2' };
+    const CASHIER_KEYS = { orders: 'pt_ksa_orders_v2', resendWebhook: 'pt_ksa_resend_webhook_v2' };
     const STATUS_MAP = {
       new: { label: 'طلب جديد', cls: 'text-amber-400 bg-amber-400/15 border-amber-400/35' },
       preparing: { label: 'قيد التحضير', cls: 'text-sky-400 bg-sky-400/15 border-sky-400/35' },
@@ -188,14 +188,14 @@
     };
     function safeRead(k, fb) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch (e) { return fb; } }
     function safeWrite(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-    let orders = safeRead(STORAGE_KEYS.orders, []);
+    let orders = safeRead(CASHIER_KEYS.orders, []);
     let activeTab = 'live', liveStatus = 'all', liveRegion = 'all', openModalOrderId = null, scannedPhone = null, html5Qr = null, cameraActive = false;
     let syncChannel = null;
     try {
       syncChannel = new BroadcastChannel('pizza_today_ksa_orders');
       syncChannel.onmessage = (ev) => {
         if (ev.data && ev.data.type === 'ORDERS_UPDATED') {
-          orders = safeRead(STORAGE_KEYS.orders, orders);
+          orders = safeRead(CASHIER_KEYS.orders, orders);
           renderDashboard();
           if (openModalOrderId) renderOrderDetailModal(openModalOrderId);
           if (scannedPhone) renderScannedCustomer(scannedPhone);
@@ -203,8 +203,8 @@
       };
     } catch (e) {}
     window.addEventListener('storage', (ev) => {
-      if (ev.key === STORAGE_KEYS.orders || (window.PizzaLoyalty && ev.key === PizzaLoyalty.LOYALTY_KEY)) {
-        orders = safeRead(STORAGE_KEYS.orders, []);
+      if (ev.key === CASHIER_KEYS.orders || (window.PizzaLoyalty && ev.key === PizzaLoyalty.LOYALTY_KEY)) {
+        orders = safeRead(CASHIER_KEYS.orders, []);
         renderDashboard();
         if (openModalOrderId) renderOrderDetailModal(openModalOrderId);
         if (scannedPhone) renderScannedCustomer(scannedPhone);
@@ -212,7 +212,7 @@
     });
     window.getCashierOrders = () => orders;
     window.appendCashierOrder = (newOrd) => { orders.unshift(newOrd); saveAndSync(); renderDashboard(); };
-    function saveAndSync() { safeWrite(STORAGE_KEYS.orders, orders); if (syncChannel) { try { syncChannel.postMessage({ type: 'ORDERS_UPDATED' }); } catch (e) {} } }
+    function saveAndSync() { safeWrite(CASHIER_KEYS.orders, orders); if (syncChannel) { try { syncChannel.postMessage({ type: 'ORDERS_UPDATED' }); } catch (e) {} } }
     function showScanFeedback(msg, isError) {
       const el = document.getElementById('scanFeedback');
       el.textContent = msg;
@@ -318,7 +318,7 @@
         document.getElementById('passError').classList.add('hidden');
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('dashboardApp').classList.remove('hidden');
-        document.getElementById('resendWebhookInput').value = safeRead(STORAGE_KEYS.resendWebhook, '');
+        document.getElementById('resendWebhookInput').value = safeRead(CASHIER_KEYS.resendWebhook, '');
         renderDashboard();
       } else document.getElementById('passError').classList.remove('hidden');
     });
@@ -329,7 +329,7 @@
     document.getElementById('tabArchiveBtn').addEventListener('click', () => { stopCamera(); activeTab = 'archive'; renderDashboard(); });
     document.getElementById('liveRegionFilter').addEventListener('change', (e) => { liveRegion = e.target.value; renderDashboard(); });
     ['dbYearFilter', 'dbMonthFilter', 'dbDateFilter', 'dbSearchInput'].forEach((id) => { document.getElementById(id).addEventListener('input', renderArchiveTable); document.getElementById(id).addEventListener('change', renderArchiveTable); });
-    document.getElementById('saveWebhookBtn').addEventListener('click', () => { safeWrite(STORAGE_KEYS.resendWebhook, document.getElementById('resendWebhookInput').value.trim()); const msg = document.getElementById('webhookSavedMsg'); msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 2400); });
+    document.getElementById('saveWebhookBtn').addEventListener('click', () => { safeWrite(CASHIER_KEYS.resendWebhook, document.getElementById('resendWebhookInput').value.trim()); const msg = document.getElementById('webhookSavedMsg'); msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 2400); });
     function openOrderDetailModal(orderId) { openModalOrderId = orderId; renderOrderDetailModal(orderId); document.getElementById('orderDetailModal').classList.remove('hidden'); if (window.lucide) window.lucide.createIcons(); }
     function closeOrderDetailModal() { openModalOrderId = null; document.getElementById('orderDetailModal').classList.add('hidden'); }
     function renderOrderDetailModal(orderId) {
