@@ -473,5 +473,5 @@ function renderFeatured() {
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
-    try { renderAll(); } catch (err) { console.error(err); }
+    renderAll();
     startAdaptiveSplash();
