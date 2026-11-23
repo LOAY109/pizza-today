@@ -636,7 +636,7 @@
             <span class="inline-flex items-center gap-1.5 font-extrabold text-amber-300"><i data-lucide="award" class="w-4 h-4"></i><span>نقاط بيتزا اليوم</span></span>
             <span id="cartEarnPreview" class="text-[11px] font-extrabold text-parchment">+0 نقطة مع الطلب</span>
           </div>
-          <div id="cartRedeemRow" class="hidden pt-2 border-t border-white/10 space-y-2">
+          <p id="cartPickupCodNote" class="hidden text-[11px] text-parchment font-bold pt-1 border-t border-white/10">عند الاستلام: اعرض رمز QR للكاشير لتحديد النقاط والخصم مباشرة عند الدفع.</p><div id="cartRedeemRow" class="hidden pt-2 border-t border-white/10 space-y-2">
             <div class="flex items-center justify-between text-[11px]">
               <span class="text-ashMuted">رصيدك المتاح: <strong id="cartAvailPts" class="text-chalk">0 نقطة</strong> (<span id="cartAvailSar">0</span> ر.س)</span>
               <span class="text-emerald-400 font-extrabold">خصم: <span id="cartRedeemSar">0</span> ر.س</span>
@@ -646,7 +646,7 @@
               <div class="inline-flex items-center gap-1.5 bg-charcoal border border-white/15 rounded-lg p-0.5">
                 <button id="redeemPtsPlusBtn" type="button" class="w-7 h-7 rounded bg-parchment text-charcoal font-black text-xs cursor-pointer">+</button>
                 <span id="cartRedeemPtsVal" class="min-w-[44px] text-center text-xs font-black text-chalk tabular-nums">0</span>
-                <button id="redeemPtsMinusBtn" type="button" class="w-7 h-7 rounded bg-slateLight text-chalk font-black text-xs cursor-pointer">-</button>
+                <button id="redeemPtsMinusBtn" type="button" class="w-7 h-7 rounded bg-slateLight text-chalk font-black text-xs cursor-pointer">-</button><button id="redeemPtsAllBtn" type="button" class="px-2 h-7 rounded bg-emerald-400 text-charcoal font-black text-[10px] cursor-pointer">الكل</button>
               </div>
             </div>
           </div>
