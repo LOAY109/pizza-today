@@ -162,7 +162,10 @@ function renderFeatured() {
         if (state.redeemPoints > maxPts) state.redeemPoints = maxPts;
         pointsDiscountSar = Math.floor(state.redeemPoints / 100);
         const redeemRow = document.getElementById('cartRedeemRow');
-        if (sum.balance >= 100 && total > 0) {
+        const isPickupCod = state.fulfillment === 'pickup' && state.paymentMethod === 'cod';
+        const codNote = document.getElementById('cartPickupCodNote');
+        if (codNote) codNote.classList.toggle('hidden', !isPickupCod);
+        if (sum.balance >= 100 && total > 0 && !isPickupCod) {
           redeemRow.classList.remove('hidden');
           document.getElementById('cartAvailPts').textContent = `${sum.balance} نقطة`;
           document.getElementById('cartAvailSar').textContent = sum.sarValue;
@@ -405,6 +408,13 @@ function renderFeatured() {
       const { total } = getCartStats();
       const maxPts = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
       state.redeemPoints = Math.min(maxPts, state.redeemPoints + 100);
+      renderCartAndHistory(); if (window.lucide) window.lucide.createIcons();
+    });
+    document.getElementById('redeemPtsAllBtn').addEventListener('click', () => {
+      if (!state.user || !window.PizzaLoyalty) return;
+      const sum = PizzaLoyalty.getCustomerSummary(state.user.phone);
+      const { total } = getCartStats();
+      state.redeemPoints = Math.floor(Math.min(sum.balance, Math.floor(total) * 100) / 100) * 100;
       renderCartAndHistory(); if (window.lucide) window.lucide.createIcons();
     });
     document.getElementById('redeemPtsMinusBtn').addEventListener('click', () => {
